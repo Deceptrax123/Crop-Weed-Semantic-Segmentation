@@ -16,7 +16,7 @@ class WeedDataset(torch.utils.data.Dataset):
         
         sample=self.paths[index]
 
-        red,nir,ndvi,ground=sample[0],sample[1],sample[2],sample[3]
+        ndvi,nir,ground,red=sample[0],sample[1],sample[2],sample[3]
         red_img,nir_img,ndvi_img,ground_img=Image.open(red),Image.open(nir),Image.open(ndvi),Image.open(ground)
         red_np,nir_np,ndvi_np,ground_np=np.array(red_img),np.array(nir_img),np.array(ndvi_img),np.array(ground_img)
 
