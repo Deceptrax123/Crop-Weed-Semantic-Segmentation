@@ -1,13 +1,14 @@
 import torch 
 import torchvision 
-import torchvision.transforms as T
+import torchvision.transforms.v2 as T
 from PIL import Image 
 import numpy as np
 
 
 class WeedDataset(torch.utils.data.Dataset):
-    def _init__(self,paths):
+    def _init__(self,paths,train):
         self.paths=paths
+        self.train=train
 
     def __len__(self):
         return len(self.paths)
@@ -26,16 +27,21 @@ class WeedDataset(torch.utils.data.Dataset):
         #Prepare X
         X=np.stack((red_np,nir_np,ndvi_np),axis=-1)
 
-
         #Prepare Y
         channels=3
         Y=np.eye(channels,dtype='unit8')[ground_np]
 
-        #Perform transforms
-        composed_transform_x=T.Compose([T.ToTensor(),T.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
-        X_tensor=composed_transform_x(X)
+        #Perform transforms and augmentation
+        if(self.train):
+            augmentation=T.Compose([T.RandomRotation(degrees=45),T.RandomHorizontalFlip(p=0.5),T.RandomVerticalFlip(p=0.5),T.ToTensor()])
+        else:
+            augmentation=T.Compose([T.ToTensor()])
+        
+        normalize=T.Normalize((0,0,0),(1,1,1))
 
-        composed_transform_y=T.Compose([T.ToTensor()])
-        Y_tensor=composed_transform_y(Y)
+        X_tensor=augmentation(X)
+        X_tensor_norm=normalize(X_tensor)
 
-        return X_tensor,Y_tensor
+        Y_tensor=augmentation(Y)
+
+        return X_tensor_norm,Y_tensor
