@@ -3,6 +3,7 @@ import torchvision
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
 from base_model import EncDec
+from initializer import initialize_weights
 from time import time 
 from torch import nn
 import torch.multiprocessing
@@ -105,6 +106,9 @@ if __name__=='__main__':
 
     #set model and optimizers
     model=EncDec().to(device=device)
+
+    #weight initializer
+    initialize_weights(model)
 
     model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999))
 
