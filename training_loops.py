@@ -39,7 +39,7 @@ def test_step():
         y_sample=y_sample.to(device=device)
 
         #test set evaluations
-        predictions=model(y_sample)
+        predictions=model(x_sample)
         loss=loss_function(predictions,y_sample)
 
         epoch_loss+=loss.item()
@@ -93,15 +93,15 @@ if __name__=='__main__':
     test_loader=DataLoader(test_set,**params)
 
     #device
-    if torch.backend.mps.is_available():
+    if torch.backends.mps.is_available():
         device=torch.device("mps")
     else:
         device=torch.device("cpu")
-    
+
 
     #Hyperparameters
     lr=0.001
-    num_epochs=100
+    num_epochs=50
     loss_function=nn.CrossEntropyLoss()
 
     #set model and optimizers

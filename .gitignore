@@ -12,7 +12,7 @@ Icon
 
 #Dataset
 data/
-
+wandb/
 
 # Thumbnails
 ._*

@@ -21,7 +21,7 @@ class WeedDataset(torch.utils.data.Dataset):
         red_img,nir_img,ndvi_img,ground_img=Image.open(red),Image.open(nir),Image.open(ndvi),Image.open(ground) #PIL objects
 
         trans=T.Resize((1024,1024))
-        red_img,nir_img,ndvi_img=trans(red_img),trans(nir_img),trans(ndvi_img),trans(ground_img)
+        red_img,nir_img,ndvi_img,ground_img=trans(red_img),trans(nir_img),trans(ndvi_img),trans(ground_img)
         red_np,nir_np,ndvi_np,ground_np=np.array(red_img),np.array(nir_img),np.array(ndvi_img),np.array(ground_img) #numpy arrays
 
         #Prepare X
@@ -29,7 +29,7 @@ class WeedDataset(torch.utils.data.Dataset):
 
         #Prepare Y
         channels=3
-        Y=np.eye(channels,dtype='unit8')[ground_np]
+        Y=np.eye(channels,dtype='uint8')[ground_np]
 
         #Perform transforms and augmentation
         if(self.training):
