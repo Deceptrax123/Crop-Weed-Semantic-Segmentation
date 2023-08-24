@@ -26,20 +26,26 @@ class WeedDataset(torch.utils.data.Dataset):
 
         #Prepare X
         X=np.stack((red_np,nir_np,ndvi_np),axis=-1)
+        X=X.astype(np.float32)
 
         #Prepare Y
         channels=3
         Y=np.eye(channels,dtype='uint8')[ground_np]
+        Y=Y.astype(np.float32)
 
         #Perform transforms and augmentation
         if(self.training):
-            augmentation=T.Compose([T.RandomRotation(degrees=45),T.RandomHorizontalFlip(p=0.5),T.RandomVerticalFlip(p=0.5),T.ToTensor()])
+            augmentation=T.Compose([T.RandomRotation(degrees=45),T.RandomHorizontalFlip(p=0.5),T.RandomVerticalFlip(p=0.5),T.ToImageTensor()])
         else:
-            augmentation=T.Compose([T.ToTensor()])
-        
-        normalize=T.Normalize((0,0,0),(1,1,1))
+            augmentation=T.Compose([T.ToImageTensor()])
 
         X_tensor=augmentation(X)
+
+        mean_img=torch.mean(X_tensor,[1,2])
+        std_img=torch.mean(X_tensor,[1,2])
+        
+        normalize=T.Normalize(mean=mean_img,std=std_img)
+
         X_tensor_norm=normalize(X_tensor)
 
         Y_tensor=augmentation(Y)
