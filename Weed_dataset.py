@@ -6,9 +6,9 @@ import numpy as np
 
 
 class WeedDataset(torch.utils.data.Dataset):
-    def _init__(self,paths,train):
+    def __init__(self,paths,training):
         self.paths=paths
-        self.train=train
+        self.training=training
 
     def __len__(self):
         return len(self.paths)
@@ -32,7 +32,7 @@ class WeedDataset(torch.utils.data.Dataset):
         Y=np.eye(channels,dtype='unit8')[ground_np]
 
         #Perform transforms and augmentation
-        if(self.train):
+        if(self.training):
             augmentation=T.Compose([T.RandomRotation(degrees=45),T.RandomHorizontalFlip(p=0.5),T.RandomVerticalFlip(p=0.5),T.ToTensor()])
         else:
             augmentation=T.Compose([T.ToTensor()])

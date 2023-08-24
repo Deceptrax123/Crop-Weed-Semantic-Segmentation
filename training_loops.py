@@ -77,8 +77,8 @@ if __name__=='__main__':
         'num_workers':0
     }
 
-    train_set=WeedDataset(train)
-    test_set=WeedDataset(test)
+    train_set=WeedDataset(paths=train,training=True)
+    test_set=WeedDataset(paths=test,training=False)
 
     wandb.init(
         project='weed-detection',
@@ -89,8 +89,8 @@ if __name__=='__main__':
     )
 
     #train and test loaders
-    train_loader=DataLoader(train_set)
-    test_loader=DataLoader(test_set)
+    train_loader=DataLoader(train_set,**params)
+    test_loader=DataLoader(test_set,**params)
 
     #device
     if torch.backend.mps.is_available():
@@ -114,3 +114,5 @@ if __name__=='__main__':
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
+
+    training_loop()
