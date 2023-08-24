@@ -30,17 +30,18 @@ def compute_weights(y_sample):
     counts=np.array(counts)
     weights=counts/total_pixels
 
-    return 1/weights
+    inverse=1/weights
+    inverse=inverse.astype(np.float32)
+    return inverse
 
 def train_step():
     epoch_loss=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
         weights=compute_weights(y_sample)
-
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=weights.to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
         #model training
         model.zero_grad()
@@ -66,7 +67,7 @@ def test_step():
 
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=weights.to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
         #test set evaluations
         predictions=model(x_sample)
@@ -79,7 +80,6 @@ def test_step():
     reduced_loss=epoch_loss/test_steps
 
     return reduced_loss
-
 
 def training_loop():
     for epoch in range(num_epochs):
@@ -98,6 +98,12 @@ def training_loop():
             "Train Loss":train_loss,
             "Test Loss":test_loss
         })
+
+        #checkpoints
+        if((epoch+1)%10==0):
+            path="./models/run_2/model{epoch}.pth".format(epoch=epoch+1)
+            torch.save(model.state_dict(),path)
+
 
 if __name__=='__main__':
     torch.multiprocessing.set_sharing_strategy('file_system')
@@ -134,7 +140,7 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=50
+    num_epochs=100
     loss_function=nn.CrossEntropyLoss()
 
     #set model and optimizers
@@ -148,7 +154,4 @@ if __name__=='__main__':
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
 
-    #training_loop()
-    for step,(x_sample,y_sample) in enumerate(train_loader):
-      print(x_sample)
-        
+    training_loop()   

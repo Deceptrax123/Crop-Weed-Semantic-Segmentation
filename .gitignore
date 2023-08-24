@@ -13,6 +13,7 @@ Icon
 #Dataset
 data/
 wandb/
+models/
 
 # Thumbnails
 ._*
