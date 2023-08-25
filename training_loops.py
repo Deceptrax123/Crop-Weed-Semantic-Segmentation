@@ -3,6 +3,7 @@ import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
 from base_model import EncDec
+from metrics import dice_score
 from initializer import initialize_weights
 from time import time 
 from torch import nn
@@ -39,6 +40,7 @@ def compute_weights(y_sample):
 
 def train_step():
     epoch_loss=0
+    dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
         weights=compute_weights(y_sample)
@@ -58,12 +60,18 @@ def train_step():
         model_optimizer.step()
 
         epoch_loss+=loss.item()
+
+        d=dice_score(predictions,y_sample)
+        dice+=d.item()
+
     reduced_loss=epoch_loss/train_steps
-    return  reduced_loss
+    dice=dice/train_steps
+
+    return reduced_loss,dice
 
 def test_step():
     epoch_loss=0
-
+    dice=0
     for step,(x_sample,y_sample) in enumerate(test_loader):
         #compute sample weights
         weights=compute_weights(y_sample)
@@ -80,26 +88,36 @@ def test_step():
         loss=loss_function(predictions,y_sample)
 
         epoch_loss+=loss.item()
-    reduced_loss=epoch_loss/test_steps
 
-    return reduced_loss
+        d=dice_score(predictions,y_sample)
+        dice+=d.item()
+
+    reduced_loss=epoch_loss/test_steps
+    dice=dice/test_steps
+
+    return reduced_loss,dice
 
 def training_loop():
     for epoch in range(num_epochs):
 
         model.train(True) #train mode
-        train_loss=train_step()
+        train_loss,train_dice=train_step()
         model.eval() #eval mode
 
-        test_loss=test_step()
+        test_loss,test_dice=test_step()
 
         print('Epoch {epoch}'.format(epoch=epoch+1))
         print('Train Loss : {tloss}'.format(tloss=train_loss))
         print("Test Loss : {teloss}".format(teloss=test_loss))
 
+        print("Train Dice Score : {dice}".format(dice=train_dice))
+        print("Test Dice Score : {dice}".format(dice=test_dice))
+
         wandb.log({
             "Train Loss":train_loss,
-            "Test Loss":test_loss
+            "Test Loss":test_loss,
+            "Train Dice Score":train_dice,
+            "Test Dice Score":test_dice
         })
 
         #checkpoints
