@@ -35,7 +35,7 @@ class WeedDataset(torch.utils.data.Dataset):
 
         #Perform transforms and augmentation
         if(self.training):
-            augmentation=T.Compose([T.RandomRotation(degrees=45),T.RandomHorizontalFlip(p=0.5),T.RandomVerticalFlip(p=0.5),T.ToImageTensor()])
+            augmentation=T.Compose([T.RandomRotation(degrees=[45,60,15,30,90]),T.RandomHorizontalFlip(p=0.2),T.RandomVerticalFlip(p=0.2),T.ToImageTensor()])
         else:
             augmentation=T.Compose([T.ToImageTensor()])
 

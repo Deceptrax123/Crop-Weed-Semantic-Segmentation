@@ -65,9 +65,9 @@ def train_step():
         dice+=d.item()
 
     reduced_loss=epoch_loss/train_steps
-    dice=dice/train_steps
+    reduced_dice=dice/train_steps
 
-    return reduced_loss,dice
+    return reduced_loss,reduced_dice
 
 def test_step():
     epoch_loss=0
@@ -93,9 +93,9 @@ def test_step():
         dice+=d.item()
 
     reduced_loss=epoch_loss/test_steps
-    dice=dice/test_steps
+    reduced_dice=dice/test_steps
 
-    return reduced_loss,dice
+    return reduced_loss,reduced_dice
 
 def training_loop():
     for epoch in range(num_epochs):
@@ -161,7 +161,7 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=300
+    num_epochs=500
 
     #set model and optimizers
     model=EncDec().to(device=device)
