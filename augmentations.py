@@ -26,7 +26,7 @@ def augment():
         ground_aug.save("./data/Sequoia/SequoiaMulti_30/augmentations/annots/ground_aug_{no}.png".format(no=ctr))
 
         image_paths=[
-            "./data/Sequoia/SequoiaMulti_30/augmentations/samples/ndvi_aug_{no}.png".format(no=ctr),"./data/Sequoia/SequoiaMulti_30/augmentations/samples/nir_aug_{no}.png ./data/Sequoia/SequoiaMulti_30/augmentations/samples/ground_aug_{no1}.png".format(no=ctr,no1=ctr),"./data/Sequoia/SequoiaMulti_30/augmentations/annots/red_aug_{no}.png".format(no=ctr),
+            "./data/Sequoia/SequoiaMulti_30/augmentations/samples/ndvi_aug_{no}.png".format(no=ctr),"./data/Sequoia/SequoiaMulti_30/augmentations/samples/nir_aug_{no}.png ./data/Sequoia/SequoiaMulti_30/augmentations/annots/ground_aug_{no1}.png".format(no=ctr,no1=ctr),"./data/Sequoia/SequoiaMulti_30/augmentations/samples/red_aug_{no}.png".format(no=ctr),
         ]
 
         for k,j in enumerate(file_paths):

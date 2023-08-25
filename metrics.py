@@ -1,10 +1,10 @@
 import torch 
 from torch import nn 
-import torch.functional as f
+import torch.nn.functional as f
 
 def dice_score(input,target):
 
-    predictions=nn.Softmax2d(input)
+    predictions=f.softmax(input)
 
     #intersection
     intersection=predictions*target
