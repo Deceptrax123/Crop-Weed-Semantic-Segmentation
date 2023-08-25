@@ -23,6 +23,9 @@ def compute_weights(y_sample):
         spectral_region=y_sample[:,i,:,:]
 
         ones=(spectral_region==1.).sum()
+
+        if ones==0:
+            ones=np.inf
         counts.append(ones)
 
     total_pixels=y_sample.size(0)*channels*1024*1024
@@ -140,8 +143,7 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=100
-    loss_function=nn.CrossEntropyLoss()
+    num_epochs=300
 
     #set model and optimizers
     model=EncDec().to(device=device)
@@ -149,7 +151,7 @@ if __name__=='__main__':
     #weight initializer
     initialize_weights(model)
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999))
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
