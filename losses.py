@@ -24,7 +24,7 @@ class DiceLoss(Module):
             
             smooth=1
 
-            dice=(2*(intersection))/(union+smooth)
+            dice=(2*(intersection))/(union+smooth).mean()
             l=1-dice
 
             loss+=l

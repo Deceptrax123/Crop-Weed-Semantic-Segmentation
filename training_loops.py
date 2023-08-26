@@ -49,7 +49,7 @@ def train_step():
         #weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=torch.from_numpy(weights).to(device=device)
+        #weights=torch.from_numpy(weights).to(device=device)
 
         #model training
         model.zero_grad()
@@ -93,7 +93,7 @@ def test_step():
 
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=torch.from_numpy(weights).to(device=device)
+        #weights=torch.from_numpy(weights).to(device=device)
 
         #test set evaluations
         predictions=model(x_sample)
@@ -196,7 +196,7 @@ if __name__=='__main__':
 
 
     #Hyperparameters
-    lr=0.001
+    lr=0.0002
     num_epochs=500
 
     #set model and optimizers
