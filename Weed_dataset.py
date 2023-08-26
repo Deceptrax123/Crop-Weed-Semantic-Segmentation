@@ -33,11 +33,7 @@ class WeedDataset(torch.utils.data.Dataset):
         Y=np.eye(channels,dtype='uint8')[ground_np]
         Y=Y.astype(np.float32)
 
-        #Perform transforms and augmentation
-        if(self.training):
-            augmentation=T.Compose([T.RandomHorizontalFlip(p=0.2),T.RandomVerticalFlip(p=0.2),T.ToImageTensor()])
-        else:
-            augmentation=T.Compose([T.ToImageTensor()])
+        augmentation=T.Compose([T.ToImageTensor()])
 
         X_tensor=augmentation(X)
 

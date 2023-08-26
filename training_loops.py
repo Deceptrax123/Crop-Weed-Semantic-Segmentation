@@ -5,6 +5,7 @@ from Weed_dataset import WeedDataset
 from base_model import EncDec
 from metrics import overall_dice_score,channel_dice_score
 from initializer import initialize_weights
+from losses import DiceLoss
 from time import time 
 from torch import nn
 import torch.multiprocessing
@@ -45,7 +46,7 @@ def train_step():
     channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
-        weights=compute_weights(y_sample)
+        #weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
         weights=torch.from_numpy(weights).to(device=device)
@@ -55,7 +56,7 @@ def train_step():
         predictions=model(x_sample)
 
         #compute loss function and perform backpropagation
-        loss_function=nn.CrossEntropyLoss(weight=weights)
+        loss_function=DiceLoss()
         loss=loss_function(predictions,y_sample)
 
         loss.backward()
@@ -69,7 +70,7 @@ def train_step():
         d_channel=channel_dice_score(predictions,y_sample)
         channel_dice+=d_channel.item()
 
-        del weights 
+        #del weights 
         del y_sample 
         del x_sample 
         del predictions
@@ -88,7 +89,7 @@ def test_step():
     channel_dice=0
     for step,(x_sample,y_sample) in enumerate(test_loader):
         #compute sample weights
-        weights=compute_weights(y_sample)
+        #weights=compute_weights(y_sample)
 
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
@@ -98,7 +99,7 @@ def test_step():
         predictions=model(x_sample)
 
         #compute loss
-        loss_function=nn.CrossEntropyLoss(weight=weights)
+        loss_function=DiceLoss()
         loss=loss_function(predictions,y_sample)
 
         epoch_loss+=loss.item()
@@ -112,7 +113,7 @@ def test_step():
         #del tensors
         del x_sample 
         del y_sample 
-        del weights
+        #del weights
         del predictions
 
         mps.empty_cache()
