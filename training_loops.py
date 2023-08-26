@@ -3,12 +3,13 @@ import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
 from base_model import EncDec
-from metrics import dice_score
+from metrics import overall_dice_score,channel_dice_score
 from initializer import initialize_weights
 from time import time 
 from torch import nn
 import torch.multiprocessing
 import wandb
+from torch import mps 
 from data_script import read_file
 import matplotlib.pyplot as plt
 import numpy as np 
@@ -41,6 +42,7 @@ def compute_weights(y_sample):
 def train_step():
     epoch_loss=0
     dice=0
+    channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
         weights=compute_weights(y_sample)
@@ -61,17 +63,29 @@ def train_step():
 
         epoch_loss+=loss.item()
 
-        d=dice_score(predictions,y_sample)
+        d=overall_dice_score(predictions,y_sample)
         dice+=d.item()
+
+        d_channel=channel_dice_score(predictions,y_sample)
+        channel_dice+=d_channel.item()
+
+        del weights 
+        del y_sample 
+        del x_sample 
+        del predictions
+
+        mps.empty_cache()
 
     reduced_loss=epoch_loss/train_steps
     reduced_dice=dice/train_steps
+    reduced_channeldice=channel_dice/train_steps
 
-    return reduced_loss,reduced_dice
+    return reduced_loss,reduced_dice,reduced_channeldice
 
 def test_step():
     epoch_loss=0
     dice=0
+    channel_dice=0
     for step,(x_sample,y_sample) in enumerate(test_loader):
         #compute sample weights
         weights=compute_weights(y_sample)
@@ -89,35 +103,53 @@ def test_step():
 
         epoch_loss+=loss.item()
 
-        d=dice_score(predictions,y_sample)
+        d=overall_dice_score(predictions,y_sample)
         dice+=d.item()
+
+        d_channel=channel_dice_score(predictions,y_sample)
+        channel_dice+=d_channel.item()
+
+        #del tensors
+        del x_sample 
+        del y_sample 
+        del weights
+        del predictions
+
+        mps.empty_cache()
 
     reduced_loss=epoch_loss/test_steps
     reduced_dice=dice/test_steps
+    reduced_channeldice=channel_dice/test_steps
 
-    return reduced_loss,reduced_dice
+    return reduced_loss,reduced_dice,reduced_channeldice
 
 def training_loop():
     for epoch in range(num_epochs):
 
         model.train(True) #train mode
-        train_loss,train_dice=train_step()
+        train_loss,train_dice,train_channeldice=train_step()
         model.eval() #eval mode
 
-        test_loss,test_dice=test_step()
+        test_loss,test_dice,test_channeldice=test_step()
+
 
         print('Epoch {epoch}'.format(epoch=epoch+1))
         print('Train Loss : {tloss}'.format(tloss=train_loss))
         print("Test Loss : {teloss}".format(teloss=test_loss))
 
-        print("Train Dice Score : {dice}".format(dice=train_dice))
-        print("Test Dice Score : {dice}".format(dice=test_dice))
+        print("Train Overall Dice Score : {dice}".format(dice=train_dice))
+        print("Test Overall Dice Score : {dice}".format(dice=test_dice))
+
+        print("Train Channel dice score : {dice}".format(dice=train_channeldice))
+        print("Test Channel dice score : {dice}".format(dice=test_channeldice))
 
         wandb.log({
             "Train Loss":train_loss,
             "Test Loss":test_loss,
             "Train Dice Score":train_dice,
-            "Test Dice Score":test_dice
+            "Test Dice Score":test_dice,
+            "Train Effective Dice score":train_channeldice,
+            "Test Effective Dice score":test_channeldice
         })
 
         #checkpoints
@@ -157,6 +189,9 @@ if __name__=='__main__':
         device=torch.device("mps")
     else:
         device=torch.device("cpu")
+
+    #clear cache
+    mps.empty_cache()
 
 
     #Hyperparameters

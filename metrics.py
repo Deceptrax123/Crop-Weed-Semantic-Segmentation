@@ -2,30 +2,44 @@ import torch
 from torch import nn 
 import torch.nn.functional as f
 
-def dice_score(input,target):
+#input : BXCXHXW
+#target : BXCXHXW
 
-    predictions=f.softmax(input)
+def overall_dice_score(input,target):
 
-    #intersection
-    intersection=predictions*target
-    intersection=torch.sum(intersection,dim=3)
-    intersection=torch.sum(intersection,dim=3)
+    predictions=f.softmax(input,dim=1)
 
-    #Union
-    union1=predictions*predictions
-    union1=torch.sum(union1,dim=3)
-    union1=torch.sum(union1,dim=2)
+    pred_bflat=predictions.view(predictions.size(0),predictions.size(1)*predictions.size(2)*predictions.size(3))
+    target_bflat=target.view(target.size(0),target.size(1)*target.size(2)*target.size(3))
 
-    union2=target*target
-    union2=torch.sum(union2,dim=3)
-    union2=torch.sum(union2,dim=2)
+    intersection=(pred_bflat*target_bflat).sum(dim=1)
+    union=pred_bflat.sum(dim=1)+target_bflat.sum(dim=1)
 
     smooth=1
 
-    dice=2.*(intersection)/(union1+union2+smooth)
+    dice=(2*(intersection)/(union+smooth)).mean()
 
-    effective_dice=dice[:,1:]
+    return dice 
 
-    dice_score=torch.sum(effective_dice)/effective_dice.size(0)
+def channel_dice_score(input,target):
+    predictions=f.softmax(input,dim=1)
 
-    return dice_score
+    channels=input.size(1)-1 #ignore  background
+
+    overall=0
+    for i in range(channels):
+        pred_channel=predictions[:,i+1,:,:]
+        target_channel=target[:,i+1,:,:]
+
+        pred_channel_bflat=pred_channel.view(pred_channel.size(0),pred_channel.size(1)*pred_channel.size(2))
+        target_channel_bflat=target_channel.view(target_channel.size(0),target_channel.size(1)*target_channel.size(2))
+
+        intersection=(pred_channel_bflat*target_channel_bflat).sum(dim=1)
+        union=pred_channel_bflat.sum(dim=1)+target_channel_bflat.sum(dim=1)
+
+        smooth=1
+
+        dice=(2*(intersection)/(union+smooth)).mean()
+        overall+=dice
+
+    return overall/channels
