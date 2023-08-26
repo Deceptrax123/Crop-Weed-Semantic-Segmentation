@@ -14,6 +14,7 @@ from torch import mps
 from data_script import read_file
 import matplotlib.pyplot as plt
 import numpy as np 
+from sklearn.model_selection import train_test_split
 
 def compute_weights(y_sample):
     #size-(batch_size,3,1024,1024)
@@ -162,7 +163,9 @@ def training_loop():
 if __name__=='__main__':
     torch.multiprocessing.set_sharing_strategy('file_system')
 
-    train,test=read_file()
+    train1,train2=read_file()
+
+    train,test=train_test_split(train1,test_size=0.20,shuffle=True)
 
     params={
         'batch_size':8,

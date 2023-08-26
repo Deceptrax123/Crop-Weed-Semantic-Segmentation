@@ -12,11 +12,12 @@ def augment():
     file_paths=[
         "./data/Sequoia/SequoiaMulti_30/trainNDVI.txt","./data/Sequoia/SequoiaMulti_30/trainNir.txt","./data/Sequoia/SequoiaMulti_30/trainRed.txt"
     ]
-    
-    for ctr,i in enumerate(train):
+
+    ctr=287
+    for i in test:
         ndvi,nir,red,ground_truth=i[0],i[1],i[3],i[2]
         ndvi,nir,red,ground_truth=Image.open(ndvi),Image.open(nir),Image.open(red),Image.open(ground_truth)
-        auguemtation=T.Compose([T.RandomHorizontalFlip(p=0.2),T.RandomVerticalFlip(p=0.2),T.RandomAffine(degrees=0,translate=(0.1,0.1))])
+        auguemtation=T.Compose([T.RandomHorizontalFlip(p=0.2),T.RandomVerticalFlip(p=0.2)])
 
         ndvi_aug,nir_aug,red_aug,ground_aug=auguemtation(ndvi),auguemtation(nir),auguemtation(red),auguemtation(ground_truth)
 
@@ -36,5 +37,5 @@ def augment():
             f.write(img_path+"\n")
 
             f.close()
-
-#augment()
+        ctr+=1
+augment()
