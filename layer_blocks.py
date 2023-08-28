@@ -15,9 +15,6 @@ class Unet_encoding_block(Module):
         self.bn2=BatchNorm2d(2*features)
         self.relu2=ReLU()
 
-        self.maxpool=MaxPool2d(kernel_size=(2,2),stride=2)
-        self.dp=Dropout2d(p=0.5)
-
     def forward(self,x):
         x=self.conv1(x)
         x=self.bn1(x)
@@ -26,9 +23,6 @@ class Unet_encoding_block(Module):
         x=self.conv2(x)
         x=self.bn2(x)
         x=self.relu2(x)
-
-        x=self.maxpool(x)
-        x=self.dp(x)
 
         return x
 
@@ -44,11 +38,7 @@ class Unet_decoding_block(Module):
         self.bn2=BatchNorm2d(features//2)
         self.relu2=ReLU()
 
-        self.upsample=Upsample(scale_factor=2)
-
-
     def forward(self,x):
-        x=self.upsample(x)
 
         x=self.dconv1(x)
         x=self.bn1(x)
@@ -134,7 +124,7 @@ class Reconsructor(Module):
         self.relu4=ReLU()
         self.dp4=Dropout2d()
 
-        self.dconv5=ConvTranspose2d(in_channels=16,out_channels=3,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
+        self.dconv5=ConvTranspose2d(in_channels=16,out_channels=3,stride=1,padding=1,kernel_size=(3,3))
 
     def forward(self,x):
         x=self.dconv1(x)
@@ -161,5 +151,5 @@ class Reconsructor(Module):
 
         return x
 
-model=Self_embedding_block()
-summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
+# model=Reconsructor()
+# summary(model,input_size=(256,64,64),batch_size=8,device='cpu')
