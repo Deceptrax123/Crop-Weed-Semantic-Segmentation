@@ -42,6 +42,14 @@ class Self_embedding(Module):
         self.bn2=BatchNorm2d()
         self.relu2=ReLU()
 
+        self.bconv3=Conv2d(in_channels=8,out_channels=16,stride=2,padding=1)
+        self.bn3=BatchNorm2d()
+        self.relu3=ReLU()
+
+        self.bconv4=Conv2d(in_channels=16,out_channels=32,stride=2,padding=1)
+        self.bn4=BatchNorm2d()
+        self.relu4=ReLU()
+
     def forward(self,x):
         x=self.bconv1(x)
         x=self.bn1(x)
@@ -50,5 +58,13 @@ class Self_embedding(Module):
         x=self.bconv2(x)
         x=self.bn2(x)
         x=self.relu2(x)
+
+        x=self.bconv3(x)
+        x=self.bn3(x)
+        x=self.relu3(x)
+
+        x=self.bconv4(x)
+        x=self.bn4(x)
+        x=self.relu4(x)
 
         return x
