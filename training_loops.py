@@ -76,12 +76,18 @@ def train_step():
         del y_sample 
         del x_sample 
         del predictions
+        del d
+        del d_channel
 
         mps.empty_cache()
 
     reduced_loss=epoch_loss/train_steps
     reduced_dice=dice/train_steps
     reduced_channeldice=channel_dice/train_steps
+
+    epoch_loss=None 
+    dice=None 
+    channel_dice=None
 
     return reduced_loss,reduced_dice,reduced_channeldice
 
@@ -117,12 +123,18 @@ def test_step():
         del y_sample 
         del weights
         del predictions
+        del d 
+        del d_channel
 
         mps.empty_cache()
 
     reduced_loss=epoch_loss/test_steps
     reduced_dice=dice/test_steps
     reduced_channeldice=channel_dice/test_steps
+
+    epoch_loss=None 
+    dice=None 
+    channel_dice=None
 
     return reduced_loss,reduced_dice,reduced_channeldice
 
