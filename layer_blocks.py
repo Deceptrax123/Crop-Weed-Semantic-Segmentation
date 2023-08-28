@@ -15,7 +15,7 @@ class Unet_block(Module):
         self.bn2=BatchNorm2d(features)
         self.relu2=ReLU()
 
-        self.maxpool=MaxPool2d(kernel_size=(2,2))
+        self.maxpool=MaxPool2d(kernel_size=(2,2),stride=2)
 
     def forward(self,x):
         x=self.conv1(x)
@@ -50,6 +50,11 @@ class Self_embedding(Module):
         self.bn4=BatchNorm2d()
         self.relu4=ReLU()
 
+        self.bconv5=Conv2d(in_channels=16,out_channels=32,stride=2,padding=1)
+        self.bn5=BatchNorm2d()
+        self.relu5=ReLU()
+
+
     def forward(self,x):
         x=self.bconv1(x)
         x=self.bn1(x)
@@ -66,5 +71,9 @@ class Self_embedding(Module):
         x=self.bconv4(x)
         x=self.bn4(x)
         x=self.relu4(x)
+
+        x=self.bconv5(x)
+        x=self.bn5(x)
+        x=self.relu5(x)
 
         return x

@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
-from base_model import EncDec
+from Base_paper.base_model import EncDec
 from metrics import overall_dice_score,channel_dice_score
 from initializer import initialize_weights
 from losses import DiceLoss
