@@ -65,32 +65,26 @@ class Self_embedding_block(Module):
     def __init__(self):
         super(Self_embedding_block,self).__init__()
 
-        self.bconv1=Conv2d(in_channels=3,out_channels=32,stride=2,kernel_size=(3,3))
-        self.bn1=BatchNorm2d(32)
+        self.bconv1=Conv2d(in_channels=3,out_channels=64,stride=2,kernel_size=(3,3),padding=1)
+        self.bn1=BatchNorm2d(64)
         self.relu1=ReLU()
         self.dp1=Dropout2d()
 
-        self.bconv2=Conv2d(in_channels=32,out_channels=64,stride=2,kernel_size=(3,3))
-        self.bn2=BatchNorm2d(64)
+        self.bconv2=Conv2d(in_channels=64,out_channels=128,stride=2,kernel_size=(3,3),padding=1)
+        self.bn2=BatchNorm2d(128)
         self.relu2=ReLU()
         self.dp2=Dropout2d()
 
-        self.bconv3=Conv2d(in_channels=64,out_channels=128,stride=2,kernel_size=(3,3))
-        self.bn3=BatchNorm2d(128)
+        self.bconv3=Conv2d(in_channels=128,out_channels=256,stride=2,kernel_size=(3,3),padding=1)
+        self.bn3=BatchNorm2d(256)
         self.relu3=ReLU()
         self.dp3=Dropout2d()
 
-        self.bconv4=Conv2d(in_channels=128,out_channels=256,stride=2,kernel_size=(3,3))
-        self.bn4=BatchNorm2d(256)
+        self.bconv4=Conv2d(in_channels=256,out_channels=512,stride=2,kernel_size=(3,3),padding=1)
+        self.bn4=BatchNorm2d(512)
         self.relu4=ReLU()
         self.dp4=Dropout2d()
 
-        self.bconv5=Conv2d(in_channels=256,out_channels=512,stride=2,kernel_size=(3,3))
-        self.bn5=BatchNorm2d(512)
-        self.relu5=ReLU()
-        self.dp5=Dropout2d()
-
-        self.adaptive=AdaptiveAvgPool2d(output_size=(31,31))
 
 
     def forward(self,x):
@@ -113,13 +107,6 @@ class Self_embedding_block(Module):
         x=self.bn4(x)
         x=self.relu4(x)
         x=self.dp4(x)
-
-        x=self.bconv5(x)
-        x=self.bn5(x)
-        x=self.relu5(x)
-        x=self.dp5(x)
-
-        x=self.adaptive(x)
 
         return x
 
@@ -174,5 +161,5 @@ class Reconsructor(Module):
 
         return x
 
-model=Reconsructor()
-summary(model,input_size=(256,32,32),batch_size=8,device='cpu')
+model=Self_embedding_block()
+summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
