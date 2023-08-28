@@ -72,7 +72,7 @@ def train_step():
         d_channel=channel_dice_score(predictions,y_sample)
         channel_dice+=d_channel.item()
 
-        #del weights 
+        del weights 
         del y_sample 
         del x_sample 
         del predictions
@@ -115,7 +115,7 @@ def test_step():
         #del tensors
         del x_sample 
         del y_sample 
-        #del weights
+        del weights
         del predictions
 
         mps.empty_cache()
@@ -133,32 +133,32 @@ def training_loop():
         train_loss,train_dice,train_channeldice=train_step()
         model.eval() #eval mode
 
-        test_loss,test_dice,test_channeldice=test_step()
+        with torch.no_grad():
+            test_loss,test_dice,test_channeldice=test_step()
 
+            print('Epoch {epoch}'.format(epoch=epoch+1))
+            print('Train Loss : {tloss}'.format(tloss=train_loss))
+            print("Test Loss : {teloss}".format(teloss=test_loss))
 
-        print('Epoch {epoch}'.format(epoch=epoch+1))
-        print('Train Loss : {tloss}'.format(tloss=train_loss))
-        print("Test Loss : {teloss}".format(teloss=test_loss))
+            print("Train Overall Dice Score : {dice}".format(dice=train_dice))
+            print("Test Overall Dice Score : {dice}".format(dice=test_dice))
 
-        print("Train Overall Dice Score : {dice}".format(dice=train_dice))
-        print("Test Overall Dice Score : {dice}".format(dice=test_dice))
+            print("Train Channel dice score : {dice}".format(dice=train_channeldice))
+            print("Test Channel dice score : {dice}".format(dice=test_channeldice))
 
-        print("Train Channel dice score : {dice}".format(dice=train_channeldice))
-        print("Test Channel dice score : {dice}".format(dice=test_channeldice))
+            wandb.log({
+                "Train Loss":train_loss,
+                "Test Loss":test_loss,
+                "Train Dice Score":train_dice,
+                "Test Dice Score":test_dice,
+                "Train Effective Dice score":train_channeldice,
+                "Test Effective Dice score":test_channeldice
+            })
 
-        wandb.log({
-            "Train Loss":train_loss,
-            "Test Loss":test_loss,
-            "Train Dice Score":train_dice,
-            "Test Dice Score":test_dice,
-            "Train Effective Dice score":train_channeldice,
-            "Test Effective Dice score":test_channeldice
-        })
-
-        #checkpoints
-        if((epoch+1)%10==0):
-            path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
-            torch.save(model.state_dict(),path)
+            #checkpoints
+            if((epoch+1)%10==0):
+                path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
+                torch.save(model.state_dict(),path)
 
 
 if __name__=='__main__':
