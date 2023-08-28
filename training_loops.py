@@ -3,6 +3,7 @@ import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
 from Base_paper.base_model import EncDec
+from arch import Architecture
 from metrics import overall_dice_score,channel_dice_score
 from initializer import initialize_weights
 from losses import DiceLoss
@@ -47,17 +48,17 @@ def train_step():
     channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
-        #weights=compute_weights(y_sample)
+        weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        #weights=torch.from_numpy(weights).to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
         #model training
         model.zero_grad()
         predictions=model(x_sample)
 
         #compute loss function and perform backpropagation
-        loss_function=DiceLoss()
+        loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
         loss.backward()
@@ -90,17 +91,17 @@ def test_step():
     channel_dice=0
     for step,(x_sample,y_sample) in enumerate(test_loader):
         #compute sample weights
-        #weights=compute_weights(y_sample)
+        weights=compute_weights(y_sample)
 
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        #weights=torch.from_numpy(weights).to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
         #test set evaluations
         predictions=model(x_sample)
 
         #compute loss
-        loss_function=DiceLoss()
+        loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
         epoch_loss+=loss.item()
@@ -156,7 +157,7 @@ def training_loop():
 
         #checkpoints
         if((epoch+1)%10==0):
-            path="./models/run_2/model{epoch}.pth".format(epoch=epoch+1)
+            path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
             torch.save(model.state_dict(),path)
 
 
@@ -200,10 +201,10 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=500
+    num_epochs=200
 
     #set model and optimizers
-    model=EncDec().to(device=device)
+    model=Architecture().to(device=device)
 
     #weight initializer
     initialize_weights(model)
