@@ -199,7 +199,7 @@ if __name__=='__main__':
 
 
     #Hyperparameters
-    lr=0.0002
+    lr=0.001
     num_epochs=500
 
     #set model and optimizers
