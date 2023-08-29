@@ -52,13 +52,13 @@ def train_step():
         weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        #weights=torch.from_numpy(weights).to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
-        #model traininh
+        #model training
         predictions=model(x_sample)
 
         #compute loss function and perform backpropagation
-        loss_function=FocalLoss(alpha=weights)
+        loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
         model_optimizer.zero_grad()
@@ -125,30 +125,31 @@ def training_loop():
         train_loss,train_dice,train_channeldice=train_step()
         
         model.eval() #eval mode
+        
+        with torch.no_grad():
+            test_dice,test_channeldice=test_step()
 
-        test_dice,test_channeldice=test_step()
+            print('Epoch {epoch}'.format(epoch=epoch+1))
+            print('Train Loss : {tloss}'.format(tloss=train_loss))
 
-        print('Epoch {epoch}'.format(epoch=epoch+1))
-        print('Train Loss : {tloss}'.format(tloss=train_loss))
+            print("Train Overall Dice Score : {dice}".format(dice=train_dice))
+            print("Test Overall Dice Score : {dice}".format(dice=test_dice))
 
-        print("Train Overall Dice Score : {dice}".format(dice=train_dice))
-        print("Test Overall Dice Score : {dice}".format(dice=test_dice))
+            print("Train Channel dice score : {dice}".format(dice=train_channeldice))
+            print("Test Channel dice score : {dice}".format(dice=test_channeldice))
 
-        print("Train Channel dice score : {dice}".format(dice=train_channeldice))
-        print("Test Channel dice score : {dice}".format(dice=test_channeldice))
+            wandb.log({
+                "Train Loss":train_loss,
+                "Train Dice Score":train_dice,
+                "Test Dice Score":test_dice,
+                "Train Effective Dice score":train_channeldice,
+                "Test Effective Dice score":test_channeldice
+            })
 
-        wandb.log({
-            "Train Loss":train_loss,
-            "Train Dice Score":train_dice,
-            "Test Dice Score":test_dice,
-            "Train Effective Dice score":train_channeldice,
-            "Test Effective Dice score":test_channeldice
-        })
-
-        #checkpoints
-        if((epoch+1)%10==0):
-                path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
-                torch.save(model.state_dict(),path)
+            #checkpoints
+            if((epoch+1)%10==0):
+                    path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
+                    torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
     torch.multiprocessing.set_sharing_strategy('file_system')
@@ -193,7 +194,7 @@ if __name__=='__main__':
 
     mps.empty_cache()
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
