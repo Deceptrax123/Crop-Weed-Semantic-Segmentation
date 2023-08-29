@@ -7,7 +7,10 @@ import torch.nn.functional as f
 
 def overall_dice_score(input,target):
 
-    predictions=f.softmax(input,dim=1)
+    probs=f.softmax(input,dim=1)
+    preds=torch.argmax(probs,dim=1)
+    predictions=torch.zeros_like(probs).scatter_(1,preds.unsqueeze(1),1.)
+    
 
     pred_bflat=predictions.view(predictions.size(0),predictions.size(1)*predictions.size(2)*predictions.size(3))
     target_bflat=target.view(target.size(0),target.size(1)*target.size(2)*target.size(3))
@@ -22,7 +25,10 @@ def overall_dice_score(input,target):
     return dice 
 
 def channel_dice_score(input,target):
-    predictions=f.softmax(input,dim=1)
+
+    probs=f.softmax(input,dim=1)
+    preds=torch.argmax(probs,dim=1)
+    predictions=torch.zeros_like(probs).scatter_(1,preds.unsqueeze(1),1.)
 
     channels=input.size(1)-1 #ignore  background
 
