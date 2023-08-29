@@ -81,7 +81,6 @@ def train_step():
 
         mps.empty_cache()
 
-        gc.collect()
 
     reduced_loss=epoch_loss/train_steps
     reduced_dice=dice/train_steps
@@ -114,7 +113,6 @@ def test_step():
 
         mps.empty_cache()
 
-        gc.collect()
 
     reduced_dice=dice/test_steps
     reduced_channeldice=channel_dice/test_steps
@@ -126,34 +124,32 @@ def training_loop():
 
         model.train(True) #train mode
         train_loss,train_dice,train_channeldice=train_step()
+        
         model.eval() #eval mode
 
-        with torch.no_grad():
-            test_dice,test_channeldice=test_step()
+        test_dice,test_channeldice=test_step()
 
-            print('Epoch {epoch}'.format(epoch=epoch+1))
-            print('Train Loss : {tloss}'.format(tloss=train_loss))
+        print('Epoch {epoch}'.format(epoch=epoch+1))
+        print('Train Loss : {tloss}'.format(tloss=train_loss))
 
-            print("Train Overall Dice Score : {dice}".format(dice=train_dice))
-            print("Test Overall Dice Score : {dice}".format(dice=test_dice))
+        print("Train Overall Dice Score : {dice}".format(dice=train_dice))
+        print("Test Overall Dice Score : {dice}".format(dice=test_dice))
 
-            print("Train Channel dice score : {dice}".format(dice=train_channeldice))
-            print("Test Channel dice score : {dice}".format(dice=test_channeldice))
+        print("Train Channel dice score : {dice}".format(dice=train_channeldice))
+        print("Test Channel dice score : {dice}".format(dice=test_channeldice))
 
-            wandb.log({
-                "Train Loss":train_loss,
-                "Train Dice Score":train_dice,
-                "Test Dice Score":test_dice,
-                "Train Effective Dice score":train_channeldice,
-                "Test Effective Dice score":test_channeldice
-            })
+        wandb.log({
+            "Train Loss":train_loss,
+            "Train Dice Score":train_dice,
+            "Test Dice Score":test_dice,
+            "Train Effective Dice score":train_channeldice,
+            "Test Effective Dice score":test_channeldice
+        })
 
-            #checkpoints
-            if((epoch+1)%10==0):
+        #checkpoints
+        if((epoch+1)%10==0):
                 path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
                 torch.save(model.state_dict(),path)
-            
-            mps.empty_cache()
 
 if __name__=='__main__':
     torch.multiprocessing.set_sharing_strategy('file_system')
@@ -197,14 +193,13 @@ if __name__=='__main__':
     model=Architecture().to(device=device)
 
     mps.empty_cache()
-    gc.collect()
 
     #weight initializer
-    initialize_weights(model)
+    initialize_weights()
 
     model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
 
-    training_loop()   
+    #training_loop()   

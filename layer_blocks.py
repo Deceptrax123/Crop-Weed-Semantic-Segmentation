@@ -2,6 +2,7 @@ import torch
 from torch.nn import Conv2d,ConvTranspose2d,ReLU,BatchNorm2d,MaxPool2d,MaxUnpool2d,AdaptiveAvgPool2d,Upsample,Dropout2d,LeakyReLU
 from torch.nn import Module 
 from torchsummary import summary
+from torch import nn
 
 class Unet_encoding_block(Module):
     def __init__(self,features):
@@ -14,6 +15,15 @@ class Unet_encoding_block(Module):
         self.conv2=Conv2d(in_channels=2*features,out_channels=2*features,stride=1,kernel_size=(3,3),padding=1)
         self.bn2=BatchNorm2d(2*features)
         self.relu2=ReLU()
+
+        self.apply(self._init_weights)
+    
+    def _init_weights(self,module):
+        if isinstance(module,(nn.Conv2d,nn.BatchNorm2d)):
+            if module.bias.data is not None :
+                module.bias.data.zero_()
+            else:
+                nn.init.kaiming_normal_(module.weight.data,mode='fan_in',nonlinearity='relu')
 
     def forward(self,x):
         x=self.conv1(x)
@@ -37,6 +47,15 @@ class Unet_decoding_block(Module):
         self.dconv2=ConvTranspose2d(in_channels=features//2,out_channels=features//2,kernel_size=(3,3),padding=1,stride=1)
         self.bn2=BatchNorm2d(features//2)
         self.relu2=ReLU()
+
+        self.apply(self._init_weights)
+
+    def _init_weights(self,module):
+        if isinstance(module,(nn.ConvTranspose2d,nn.BatchNorm2d)):
+            if module.bias.data is not None :
+                module.bias.data.zero_()
+            else:
+                nn.init.kaiming_normal_(module.weight.data,mode='fan_in',nonlinearity='relu')
 
     def forward(self,x):
 
@@ -70,6 +89,14 @@ class Self_embedding_block(Module):
         self.relu3=LeakyReLU(negative_slope=0.2)
         self.dp3=Dropout2d()
 
+        self.apply(self._init_weights)
+
+    def _init_weights(self,module):
+        if isinstance(module,(nn.Conv2d,nn.BatchNorm2d)):
+            if module.bias.data is not None :
+                module.bias.data.zero_()
+            else:
+                nn.init.kaiming_normal_(module.weight.data,mode='fan_in',nonlinearity='leaky_relu')
 
 
     def forward(self,x):
@@ -106,6 +133,14 @@ class Reconsructor(Module):
 
         self.dconv3=ConvTranspose2d(in_channels=8,out_channels=3,kernel_size=(3,3),padding=1,output_padding=1,stride=2)
 
+        self.apply(self._init_weights)
+
+    def _init_weights(self,module):
+        if isinstance(module,(nn.ConvTranspose2d,nn.BatchNorm2d)):
+            if module.bias.data is not None :
+                module.bias.data.zero_()
+            else:
+                nn.init.kaiming_normal_(module.weight.data,mode='fan_in',nonlinearity='relu')
 
         
     def forward(self,x):
