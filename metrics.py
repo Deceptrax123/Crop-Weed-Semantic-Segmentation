@@ -31,8 +31,8 @@ def channel_dice_score(input,target):
         pred_channel=predictions[:,i+1,:,:]
         target_channel=target[:,i+1,:,:]
 
-        pred_channel_bflat=pred_channel.view(pred_channel.size(0),pred_channel.size(1)*pred_channel.size(2)*pred_channel.size(3))
-        target_channel_bflat=target_channel.view(target_channel.size(0),target_channel.size(1)*target_channel.size(2)*target_channel.size(3))
+        pred_channel_bflat=pred_channel.view(pred_channel.size(0),pred_channel.size(1)*pred_channel.size(2))
+        target_channel_bflat=target_channel.view(target_channel.size(0),target_channel.size(1)*target_channel.size(2))
 
         intersection=(pred_channel_bflat*target_channel_bflat).sum(dim=1)
         union=pred_channel_bflat.sum(dim=1)+target_channel_bflat.sum(dim=1)

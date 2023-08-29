@@ -158,9 +158,9 @@ def training_loop():
 if __name__=='__main__':
     torch.multiprocessing.set_sharing_strategy('file_system')
 
-    train1,train2=read_file()
+    train,test=read_file()
 
-    train,test=train_test_split(train1,test_size=0.20,shuffle=True)
+    #train,test=train_test_split(train1,test_size=0.20,shuffle=True)
 
     params={
         'batch_size':8,
@@ -190,7 +190,7 @@ if __name__=='__main__':
         device=torch.device("cpu")
 
     #Hyperparameters
-    lr=0.001
+    lr=0.0002
     num_epochs=200
 
     #set model and optimizers
@@ -202,7 +202,7 @@ if __name__=='__main__':
     #weight initializer
     initialize_weights(model)
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999))
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']

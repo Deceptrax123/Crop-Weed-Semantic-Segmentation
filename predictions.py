@@ -4,7 +4,7 @@ from Weed_dataset import WeedDataset
 from torch.utils.data import DataLoader
 import numpy as np 
 from PIL import Image 
-from Base_paper.my_arch import EncDec
+from Base_paper.base_arch import EncDec
 from data_script import read_file
 import matplotlib.pyplot as plt
 
