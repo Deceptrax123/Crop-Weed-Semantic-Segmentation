@@ -13,7 +13,7 @@ def augment():
         "./data/Sequoia/SequoiaMulti_30/trainNDVI.txt","./data/Sequoia/SequoiaMulti_30/trainNir.txt","./data/Sequoia/SequoiaMulti_30/trainRed.txt"
     ]
 
-    ctr=60
+    ctr=120
 
     resize=T.CenterCrop((1024,1024))
     for i in test:
@@ -28,7 +28,7 @@ def augment():
         img=np.stack((ndvi_np,nir_np,red_np,ground_np),axis=-1)
 
         img=Image.fromarray(img)
-        auguemtation=T.Compose([T.RandomVerticalFlip(p=0.5)])
+        auguemtation=T.Compose([T.RandomRotation(degrees=(180,181))])
 
         img=auguemtation(img)
 

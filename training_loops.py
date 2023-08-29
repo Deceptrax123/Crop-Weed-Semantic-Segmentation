@@ -6,7 +6,7 @@ from Base_paper.base_arch import MyArch
 from arch import Architecture
 from vgg16 import extractor
 from metrics import overall_dice_score,channel_dice_score
-from losses import DiceLoss
+from losses import DiceLoss,FocalLoss
 from time import time 
 from torch import nn
 import torch.multiprocessing
@@ -52,13 +52,13 @@ def train_step():
         weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=torch.from_numpy(weights).to(device=device)
+        #weights=torch.from_numpy(weights).to(device=device)
 
         #model traininh
         predictions=model(x_sample)
 
         #compute loss function and perform backpropagation
-        loss_function=nn.CrossEntropyLoss(weight=weights)
+        loss_function=FocalLoss(alpha=weights)
         loss=loss_function(predictions,y_sample)
 
         model_optimizer.zero_grad()
