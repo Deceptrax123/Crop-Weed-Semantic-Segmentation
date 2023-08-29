@@ -16,20 +16,14 @@ class Architecture(Module):
 
         self.emb=Self_embedding_block()
         self.unet=Unet()
-
-        self.dconv=ConvTranspose2d(in_channels=512,out_channels=256,stride=1,padding=1,kernel_size=(3,3))
-
         self.recon=Reconsructor()
     
     def forward(self,x):
-
-        #features=extractor().classifier(x)
-        emb=self.emb(x)
-
-        #f=torch.add(features,emb,alpha=1)
-
-        x=self.dconv(emb)
+        x=self.emb(x)
         x=self.unet(x)
         x=self.recon(x)
 
         return x
+
+#model=Architecture()
+#summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')

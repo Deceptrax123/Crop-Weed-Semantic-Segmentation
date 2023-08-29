@@ -9,23 +9,24 @@ class Unet(Module):
         super(Unet,self).__init__()
 
         #downsampling blocks
-        self.down1=Unet_encoding_block(256)
-        self.down2=Unet_encoding_block(512)
-        self.down3=Unet_encoding_block(1024)
+        self.down1=Unet_encoding_block(32)
+        self.down2=Unet_encoding_block(64)
+        self.down3=Unet_encoding_block(128)
 
         #embedding convolution
-        self.emb1=Conv2d(in_channels=2048,out_channels=2048,stride=1,padding=1,kernel_size=(3,3))
-        self.emb2=Conv2d(in_channels=2048,out_channels=2048,stride=1,padding=1,kernel_size=(3,3))
+        self.emb1=Conv2d(in_channels=256,out_channels=256,stride=1,padding=1,kernel_size=(3,3))
+        self.emb2=Conv2d(in_channels=256,out_channels=256,stride=1,padding=1,kernel_size=(3,3))
         
         #upsampling blocks
-        self.up1=Unet_decoding_block(2048)
-        self.up2=Unet_decoding_block(1024)
-        self.up3=Unet_decoding_block(512)
+        self.up1=Unet_decoding_block(256)
+        self.up2=Unet_decoding_block(128)
+        self.up3=Unet_decoding_block(64)
+    
 
         #deconvolutoion blocks
-        self.dconv1=ConvTranspose2d(in_channels=2048,out_channels=2048,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
-        self.dconv2=ConvTranspose2d(in_channels=1024,out_channels=1024,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
-        self.dconv3=ConvTranspose2d(in_channels=512,out_channels=512,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
+        self.dconv1=ConvTranspose2d(in_channels=256,out_channels=256,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
+        self.dconv2=ConvTranspose2d(in_channels=128,out_channels=128,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
+        self.dconv3=ConvTranspose2d(in_channels=64,out_channels=64,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
 
         #maxpools
         self.max1=MaxPool2d(kernel_size=(2,2),stride=2)
@@ -73,5 +74,5 @@ class Unet(Module):
 
         return output
 
-# model=Unet()
-# summary(model,input_size=(256,64,64),batch_size=8,device='cpu')
+#model=Unet()
+#summary(model,input_size=(32,128,128),batch_size=8,device='cpu')

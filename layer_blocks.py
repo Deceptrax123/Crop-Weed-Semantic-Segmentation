@@ -1,5 +1,5 @@
 import torch 
-from torch.nn import Conv2d,ConvTranspose2d,ReLU,BatchNorm2d,MaxPool2d,MaxUnpool2d,AdaptiveAvgPool2d,Upsample,Dropout2d
+from torch.nn import Conv2d,ConvTranspose2d,ReLU,BatchNorm2d,MaxPool2d,MaxUnpool2d,AdaptiveAvgPool2d,Upsample,Dropout2d,LeakyReLU
 from torch.nn import Module 
 from torchsummary import summary
 
@@ -55,25 +55,20 @@ class Self_embedding_block(Module):
     def __init__(self):
         super(Self_embedding_block,self).__init__()
 
-        self.bconv1=Conv2d(in_channels=3,out_channels=64,stride=2,kernel_size=(3,3),padding=1)
-        self.bn1=BatchNorm2d(64)
-        self.relu1=ReLU()
+        self.bconv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=1)
+        self.bn1=BatchNorm2d(8)
+        self.relu1=LeakyReLU(negative_slope=0.2)
         self.dp1=Dropout2d()
 
-        self.bconv2=Conv2d(in_channels=64,out_channels=128,stride=2,kernel_size=(3,3),padding=1)
-        self.bn2=BatchNorm2d(128)
-        self.relu2=ReLU()
+        self.bconv2=Conv2d(in_channels=8,out_channels=16,stride=2,kernel_size=(3,3),padding=1)
+        self.bn2=BatchNorm2d(16)
+        self.relu2=LeakyReLU(negative_slope=0.2)
         self.dp2=Dropout2d()
 
-        self.bconv3=Conv2d(in_channels=128,out_channels=256,stride=2,kernel_size=(3,3),padding=1)
-        self.bn3=BatchNorm2d(256)
-        self.relu3=ReLU()
+        self.bconv3=Conv2d(in_channels=16,out_channels=32,stride=2,kernel_size=(3,3),padding=1)
+        self.bn3=BatchNorm2d(32)
+        self.relu3=LeakyReLU(negative_slope=0.2)
         self.dp3=Dropout2d()
-
-        self.bconv4=Conv2d(in_channels=256,out_channels=512,stride=2,kernel_size=(3,3),padding=1)
-        self.bn4=BatchNorm2d(512)
-        self.relu4=ReLU()
-        self.dp4=Dropout2d()
 
 
 
@@ -93,39 +88,26 @@ class Self_embedding_block(Module):
         x=self.relu3(x)
         x=self.dp3(x)
 
-        x=self.bconv4(x)
-        x=self.bn4(x)
-        x=self.relu4(x)
-        x=self.dp4(x)
-
         return x
 
 class Reconsructor(Module):
     def __init__(self):
         super(Reconsructor,self).__init__()
 
-        self.dconv1=ConvTranspose2d(in_channels=256,out_channels=128,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
-        self.bn1=BatchNorm2d(128)
+        self.dconv1=ConvTranspose2d(in_channels=32,out_channels=16,stride=2,padding=1,output_padding=1,kernel_size=(3,3))
+        self.bn1=BatchNorm2d(16)
         self.relu1=ReLU()
         self.dp1=Dropout2d()
 
-        self.dconv2=ConvTranspose2d(in_channels=128,out_channels=64,padding=1,output_padding=1,kernel_size=(3,3),stride=2)
-        self.bn2=BatchNorm2d(64)
+        self.dconv2=ConvTranspose2d(in_channels=16,out_channels=8,padding=1,output_padding=1,kernel_size=(3,3),stride=2)
+        self.bn2=BatchNorm2d(8)
         self.relu2=ReLU()
         self.dp2=Dropout2d()
 
-        self.dconv3=ConvTranspose2d(in_channels=64,out_channels=32,kernel_size=(3,3),padding=1,output_padding=1,stride=2)
-        self.bn3=BatchNorm2d(32)
-        self.relu3=ReLU()
-        self.dp3=Dropout2d()
+        self.dconv3=ConvTranspose2d(in_channels=8,out_channels=3,kernel_size=(3,3),padding=1,output_padding=1,stride=2)
 
-        self.dconv4=ConvTranspose2d(in_channels=32,out_channels=16,kernel_size=(3,3),padding=1,output_padding=1,stride=2)
-        self.bn4=BatchNorm2d(16)
-        self.relu4=ReLU()
-        self.dp4=Dropout2d()
 
-        self.dconv5=ConvTranspose2d(in_channels=16,out_channels=3,stride=1,padding=1,kernel_size=(3,3))
-
+        
     def forward(self,x):
         x=self.dconv1(x)
         x=self.bn1(x)
@@ -138,18 +120,8 @@ class Reconsructor(Module):
         x=self.dp2(x)
 
         x=self.dconv3(x)
-        x=self.bn3(x)
-        x=self.relu3(x)
-        x=self.dp3(x)
-
-        x=self.dconv4(x)
-        x=self.bn4(x)
-        x=self.relu4(x)
-        x=self.dp4(x)
-
-        x=self.dconv5(x)
 
         return x
 
-# model=Reconsructor()
-# summary(model,input_size=(256,64,64),batch_size=8,device='cpu')
+model=Self_embedding_block()
+summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')

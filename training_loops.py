@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
-from my_arch import MyArch
+from Base_paper.base_arch import MyArch
 from arch import Architecture
 from vgg16 import extractor
 from metrics import overall_dice_score,channel_dice_score
@@ -17,6 +17,7 @@ from data_script import read_file
 import matplotlib.pyplot as plt
 import numpy as np 
 from sklearn.model_selection import train_test_split
+import gc 
 
 def compute_weights(y_sample):
     #size-(batch_size,3,1024,1024)
@@ -77,10 +78,10 @@ def train_step():
         del y_sample 
         del x_sample 
         del predictions
-        del d
-        del d_channel
 
         mps.empty_cache()
+
+        gc.collect()
 
     reduced_loss=epoch_loss/train_steps
     reduced_dice=dice/train_steps
@@ -89,25 +90,16 @@ def train_step():
     return reduced_loss,reduced_dice,reduced_channeldice
 
 def test_step():
-    epoch_loss=0
     dice=0
     channel_dice=0
     for step,(x_sample,y_sample) in enumerate(test_loader):
-        #compute sample weights
-        weights=compute_weights(y_sample)
-
+    
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=torch.from_numpy(weights).to(device=device)
-
+      
         #test set evaluations
         predictions=model(x_sample)
 
-        #compute loss
-        loss_function=nn.CrossEntropyLoss(weight=weights)
-        loss=loss_function(predictions,y_sample)
-
-        epoch_loss+=loss.item()
 
         d=overall_dice_score(predictions,y_sample)
         dice+=d.item()
@@ -118,18 +110,16 @@ def test_step():
         #del tensors
         del x_sample 
         del y_sample 
-        del weights
         del predictions
-        del d 
-        del d_channel
-
+        
         mps.empty_cache()
 
-    reduced_loss=epoch_loss/test_steps
+        gc.collect()
+
     reduced_dice=dice/test_steps
     reduced_channeldice=channel_dice/test_steps
 
-    return reduced_loss,reduced_dice,reduced_channeldice
+    return reduced_dice,reduced_channeldice
 
 def training_loop():
     for epoch in range(num_epochs):
@@ -139,11 +129,10 @@ def training_loop():
         model.eval() #eval mode
 
         with torch.no_grad():
-            test_loss,test_dice,test_channeldice=test_step()
+            test_dice,test_channeldice=test_step()
 
             print('Epoch {epoch}'.format(epoch=epoch+1))
             print('Train Loss : {tloss}'.format(tloss=train_loss))
-            print("Test Loss : {teloss}".format(teloss=test_loss))
 
             print("Train Overall Dice Score : {dice}".format(dice=train_dice))
             print("Test Overall Dice Score : {dice}".format(dice=test_dice))
@@ -153,7 +142,6 @@ def training_loop():
 
             wandb.log({
                 "Train Loss":train_loss,
-                "Test Loss":test_loss,
                 "Train Dice Score":train_dice,
                 "Test Dice Score":test_dice,
                 "Train Effective Dice score":train_channeldice,
@@ -175,7 +163,7 @@ if __name__=='__main__':
     train,test=train_test_split(train1,test_size=0.20,shuffle=True)
 
     params={
-        'batch_size':2,
+        'batch_size':8,
         'shuffle':True,
         'num_workers':0
     }
@@ -201,22 +189,19 @@ if __name__=='__main__':
     else:
         device=torch.device("cpu")
 
-    #device=torch.device("cpu")
-
-
     #Hyperparameters
     lr=0.001
     num_epochs=200
 
     #set model and optimizers
-    model=MyArch().to(device=device)
+    model=Architecture().to(device=device)
 
     mps.empty_cache()
 
     #weight initializer
     initialize_weights(model)
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
