@@ -6,7 +6,6 @@ from Base_paper.base_arch import MyArch
 from arch import Architecture
 from vgg16 import extractor
 from metrics import overall_dice_score,channel_dice_score
-from initializer import initialize_weights
 from losses import DiceLoss
 from time import time 
 from torch import nn
@@ -35,7 +34,7 @@ def compute_weights(y_sample):
             ones=np.inf
         counts.append(ones)
 
-    total_pixels=y_sample.size(0)*channels*1024*1024
+    total_pixels=y_sample.size(0)*1024*1024
 
     counts=np.array(counts)
     weights=counts/total_pixels
@@ -50,19 +49,19 @@ def train_step():
     channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
-        #weights=compute_weights(y_sample)
+        weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        #weights=torch.from_numpy(weights).to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
-        #model training
-        model.zero_grad()
+        #model traininh
         predictions=model(x_sample)
 
         #compute loss function and perform backpropagation
-        loss_function=DiceLoss()
+        loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
+        model_optimizer.zero_grad()
         loss.backward()
         model_optimizer.step()
 
@@ -74,7 +73,7 @@ def train_step():
         d_channel=channel_dice_score(predictions,y_sample)
         channel_dice+=d_channel.item()
 
-        #del weights 
+        del weights 
         del y_sample 
         del x_sample 
         del predictions
@@ -186,7 +185,7 @@ if __name__=='__main__':
         device=torch.device("cpu")
 
     #Hyperparameters
-    lr=0.0002
+    lr=0.001
     num_epochs=200
 
     #set model and optimizers
@@ -194,12 +193,9 @@ if __name__=='__main__':
 
     mps.empty_cache()
 
-    #weight initializer
-    initialize_weights()
-
     model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
 
-    #training_loop()   
+    training_loop()   
