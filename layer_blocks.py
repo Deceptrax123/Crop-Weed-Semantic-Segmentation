@@ -206,5 +206,5 @@ class Reconsructor(Module):
 
         return x
 
-model=Reconsructor()
-summary(model,input_size=(32,128,128),batch_size=8,device='cpu')
+#model=Reconsructor()
+#summary(model,input_size=(32,128,128),batch_size=8,device='cpu')
