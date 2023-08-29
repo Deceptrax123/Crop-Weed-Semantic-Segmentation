@@ -3,9 +3,9 @@ from torch.nn import Module,Conv2d,Softmax2d,ReLU,MaxPool2d,Dropout2d,Upsample,A
 from torchsummary import summary
 
 
-class EncDec(Module):
+class MyArch(Module):
     def __init__(self):
-        super(EncDec,self).__init__()
+        super(MyArch,self).__init__()
 
         self.conv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=1)
         self.bn1=BatchNorm2d(8)
@@ -61,64 +61,101 @@ class EncDec(Module):
 
         self.dconv7=ConvTranspose2d(in_channels=8,out_channels=3,padding=1,stride=2,kernel_size=(3,3),output_padding=1)
 
+        #dropoouts
+        self.dp1=Dropout2d()
+        self.dp2=Dropout2d()
+        self.dp3=Dropout2d()
+        self.dp4=Dropout2d()
+        self.dp5=Dropout2d()
+        self.dp6=Dropout2d()
+        self.dp7=Dropout2d()
+        self.dp8=Dropout2d()
+        self.dp9=Dropout2d()
+        self.dp10=Dropout2d()
+        self.dp11=Dropout2d()
+        self.dp12=Dropout2d()
+        self.dp13=Dropout2d()
+
         self.classifier=Softmax2d()
     
     def forward(self,x):
 
         #encoding layers
-        x=self.conv1(x)
-        x=self.bn1(x)
+        x1=self.conv1(x)
+        x=self.bn1(x1)
         x=self.r1(x)
+        x=self.dp1(x)
 
-        x=self.conv2(x)
-        x=self.bn2(x)
+        x2=self.conv2(x)
+        x=self.bn2(x2)
         x=self.r2(x)
+        x=self.dp2(x)
 
-        x=self.conv3(x)
-        x=self.bn3(x)
+        x3=self.conv3(x)
+        x=self.bn3(x3)
         x=self.r3(x)
+        x=self.dp3(x)
 
-        x=self.conv4(x)
-        x=self.bn4(x)
+        x4=self.conv4(x)
+        x=self.bn4(x4)
         x=self.r4(x)
+        x=self.dp4(x)
 
-        x=self.conv5(x)
-        x=self.bn5(x)
+        x5=self.conv5(x)
+        x=self.bn5(x5)
         x=self.r5(x)
+        x=self.dp5(x)
 
-        x=self.conv6(x)
-        x=self.bn6(x)
+        x6=self.conv6(x)
+        x=self.bn6(x6)
         x=self.r6(x)
+        x=self.dp6(x)
 
-        x=self.conv7(x)
-        x=self.bn7(x)
+        x7=self.conv7(x)
+        x=self.bn7(x7)
         x=self.r7(x)
+        x=self.dp7(x)
 
         #decoding layers
         x=self.dconv1(x)
-        x=self.bn8(x)
+        xcat1=torch.add(x,x6)
+        x=self.bn8(xcat1)
         x=self.r8(x)
+        x=self.dp8(x)
 
         x=self.dconv2(x)
-        x=self.bn9(x)
+        xcat2=torch.add(x,x5)
+        x=self.bn9(xcat2)
         x=self.r9(x)
+        x=self.dp9(x)
 
         x=self.dconv3(x)
-        x=self.bn10(x)
+        xcat3=torch.add(x,x4)
+        x=self.bn10(xcat3)
         x=self.r10(x)
+        x=self.dp10(x)
 
         x=self.dconv4(x)
-        x=self.bn11(x)
+        xcat4=torch.add(x,x3)
+        x=self.bn11(xcat4)
         x=self.r11(x)
+        x=self.dp11(x)
 
         x=self.dconv5(x)
-        x=self.bn12(x)
+        xcat5=torch.add(x,x2)
+        x=self.bn12(xcat5)
         x=self.r12(x)
+        x=self.dp12(x)
 
         x=self.dconv6(x)
-        x=self.bn13(x)
+        xcat6=torch.add(x,x1)
+        x=self.bn13(xcat6)
         x=self.r13(x)
+        x=self.dp13(x)
 
         x=self.dconv7(x)
 
         return x
+
+# model=MyArch()
+# summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')

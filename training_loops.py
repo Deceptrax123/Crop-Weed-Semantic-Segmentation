@@ -2,8 +2,9 @@ import torch
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
-from Base_paper.base_model import EncDec
+from my_arch import MyArch
 from arch import Architecture
+from vgg16 import extractor
 from metrics import overall_dice_score,channel_dice_score
 from initializer import initialize_weights
 from losses import DiceLoss
@@ -11,7 +12,7 @@ from time import time
 from torch import nn
 import torch.multiprocessing
 import wandb
-from torch import mps 
+from torch import mps,cpu
 from data_script import read_file
 import matplotlib.pyplot as plt
 import numpy as np 
@@ -85,10 +86,6 @@ def train_step():
     reduced_dice=dice/train_steps
     reduced_channeldice=channel_dice/train_steps
 
-    epoch_loss=None 
-    dice=None 
-    channel_dice=None
-
     return reduced_loss,reduced_dice,reduced_channeldice
 
 def test_step():
@@ -132,10 +129,6 @@ def test_step():
     reduced_dice=dice/test_steps
     reduced_channeldice=channel_dice/test_steps
 
-    epoch_loss=None 
-    dice=None 
-    channel_dice=None
-
     return reduced_loss,reduced_dice,reduced_channeldice
 
 def training_loop():
@@ -171,7 +164,8 @@ def training_loop():
             if((epoch+1)%10==0):
                 path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
                 torch.save(model.state_dict(),path)
-
+            
+            mps.empty_cache()
 
 if __name__=='__main__':
     torch.multiprocessing.set_sharing_strategy('file_system')
@@ -181,7 +175,7 @@ if __name__=='__main__':
     train,test=train_test_split(train1,test_size=0.20,shuffle=True)
 
     params={
-        'batch_size':8,
+        'batch_size':2,
         'shuffle':True,
         'num_workers':0
     }
@@ -207,8 +201,7 @@ if __name__=='__main__':
     else:
         device=torch.device("cpu")
 
-    #clear cache
-    mps.empty_cache()
+    #device=torch.device("cpu")
 
 
     #Hyperparameters
@@ -216,7 +209,9 @@ if __name__=='__main__':
     num_epochs=200
 
     #set model and optimizers
-    model=Architecture().to(device=device)
+    model=MyArch().to(device=device)
+
+    mps.empty_cache()
 
     #weight initializer
     initialize_weights(model)

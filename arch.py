@@ -7,18 +7,7 @@ from unet import Unet
 from torch.nn import Module
 from torch.nn import Conv2d,ConvTranspose2d
 from torchsummary import summary
-
-#initialize feature extractor VGG16
-feature_extractor=vgg16(weights=VGG16_Weights.DEFAULT)
-classifier_1=nn.Sequential(*list(feature_extractor.classifier.children())[:-7])
-
-feature_extractor.classifier=classifier_1
-
-classifier_2=nn.Sequential(*list(feature_extractor.features._modules.values())[:-1])
-feature_extractor.classifier=classifier_2
-
-final_extractor=feature_extractor.classifier
-
+from vgg16 import extractor
 
 #Architecture
 class Architecture(Module):
@@ -34,12 +23,12 @@ class Architecture(Module):
     
     def forward(self,x):
 
-        features=final_extractor(x)
-        x=self.emb(x)
+        #features=extractor().classifier(x)
+        emb=self.emb(x)
 
-        f_comb=torch.concat((features,x))
+        #f=torch.add(features,emb,alpha=1)
 
-        x=self.dconv(f_comb)
+        x=self.dconv(emb)
         x=self.unet(x)
         x=self.recon(x)
 

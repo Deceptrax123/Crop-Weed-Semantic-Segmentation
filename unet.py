@@ -57,17 +57,17 @@ class Unet(Module):
         x5=self.emb2(x4)
 
         x6=self.dconv1(x5)
-        xcat1=torch.cat((x6,x3))
+        xcat1=torch.add(x6,x3)
         xcat1=self.dp4(xcat1)
         xu1=self.up1(xcat1)
 
         x7=self.dconv2(xu1)
-        xcat2=torch.cat((x2,x7))
+        xcat2=torch.add(x2,x7)
         xcat2=self.dp5(xcat2)
         xu2=self.up2(xcat2)
 
         x8=self.dconv3(xu2)
-        xcat3=torch.cat((x8,x1))
+        xcat3=torch.add(x8,x1)
         xcat3=self.dp3(xcat3)
         output=self.up3(xcat3)
 
