@@ -16,8 +16,8 @@ class DiceLoss(Module):
             pred_channel=pred[:,i,:,:]
             target_channel=targets[:,i,:,:]
 
-            pred_batch=pred_channel.view(pred_channel.size(0),pred_channel.size(1)*pred_channel.size(2))
-            target_batch=target_channel.view(target_channel.size(0),target_channel.size(1)*target_channel.size(2))
+            pred_batch=pred_channel.view(pred_channel.size(0),pred_channel.size(1)*pred_channel.size(2)*pred_channel.size(3))
+            target_batch=target_channel.view(target_channel.size(0),target_channel.size(1)*target_channel.size(2)*target_channel.size(3))
 
             intersection=(pred_batch*target_batch).sum(dim=1)
             union=pred_batch.sum(dim=1)+target_batch.sum(dim=1)

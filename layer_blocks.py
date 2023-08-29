@@ -123,5 +123,5 @@ class Reconsructor(Module):
 
         return x
 
-model=Self_embedding_block()
-summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
+#model=Self_embedding_block()
+#summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')

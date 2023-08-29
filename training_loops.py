@@ -50,17 +50,17 @@ def train_step():
     channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
-        weights=compute_weights(y_sample)
+        #weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=torch.from_numpy(weights).to(device=device)
+        #weights=torch.from_numpy(weights).to(device=device)
 
         #model training
         model.zero_grad()
         predictions=model(x_sample)
 
         #compute loss function and perform backpropagation
-        loss_function=nn.CrossEntropyLoss(weight=weights)
+        loss_function=DiceLoss()
         loss=loss_function(predictions,y_sample)
 
         loss.backward()
@@ -74,7 +74,7 @@ def train_step():
         d_channel=channel_dice_score(predictions,y_sample)
         channel_dice+=d_channel.item()
 
-        del weights 
+        #del weights 
         del y_sample 
         del x_sample 
         del predictions
@@ -111,7 +111,7 @@ def test_step():
         del x_sample 
         del y_sample 
         del predictions
-        
+
         mps.empty_cache()
 
         gc.collect()
@@ -197,6 +197,7 @@ if __name__=='__main__':
     model=Architecture().to(device=device)
 
     mps.empty_cache()
+    gc.collect()
 
     #weight initializer
     initialize_weights(model)
