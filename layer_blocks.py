@@ -74,6 +74,18 @@ class Self_embedding_block(Module):
     def __init__(self):
         super(Self_embedding_block,self).__init__()
 
+        self.inconv1=Conv2d(in_channels=3,out_channels=3,stride=1,padding=1,kernel_size=(3,3))
+        self.ibn1=BatchNorm2d(3)
+        self.ir1=LeakyReLU(negative_slope=0.2)
+
+        self.inconv2=Conv2d(in_channels=3,out_channels=3,stride=1,padding=1,kernel_size=(3,3))
+        self.ibn2=BatchNorm2d(3)
+        self.ir2=LeakyReLU(negative_slope=0.2)
+
+        self.inconv3=Conv2d(in_channels=3,out_channels=3,stride=1,padding=1,kernel_size=(3,3))
+        self.ibn3=BatchNorm2d(3)
+        self.ir3=LeakyReLU(negative_slope=0.2)
+
         self.bconv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=1)
         self.bn1=BatchNorm2d(8)
         self.relu1=LeakyReLU(negative_slope=0.2)
@@ -100,6 +112,18 @@ class Self_embedding_block(Module):
 
 
     def forward(self,x):
+        x=self.inconv1(x)
+        x=self.ibn1(x)
+        x=self.ir1(x)
+
+        x=self.inconv2(x)
+        x=self.ibn2(x)
+        x=self.ir2(x)
+
+        x=self.inconv3(x)
+        x=self.ibn3(x)
+        x=self.ir3(x)
+
         x=self.bconv1(x)
         x=self.bn1(x)
         x=self.relu1(x)
@@ -132,6 +156,19 @@ class Reconsructor(Module):
         self.dp2=Dropout2d()
 
         self.dconv3=ConvTranspose2d(in_channels=8,out_channels=3,kernel_size=(3,3),padding=1,output_padding=1,stride=2)
+        self.bn3=BatchNorm2d(3)
+        self.relu3=ReLU()
+        self.dp3=Dropout2d()
+
+        self.outconv1=Conv2d(in_channels=3,out_channels=3,padding=1,stride=1,kernel_size=(3,3))
+        self.obn1=BatchNorm2d(3)
+        self.relu4=ReLU()
+
+        self.outconv2=Conv2d(in_channels=3,out_channels=3,padding=1,stride=1,kernel_size=(3,3))
+        self.obn2=BatchNorm2d(3)
+        self.relu5=ReLU()
+
+        self.outconv3=Conv2d(in_channels=3,out_channels=3,padding=1,stride=1,kernel_size=(3,3))
 
         self.apply(self._init_weights)
 
@@ -155,8 +192,19 @@ class Reconsructor(Module):
         x=self.dp2(x)
 
         x=self.dconv3(x)
+        x=self.bn3(x)
+        x=self.relu3(x)
+        x=self.dp3(x)
+
+        x=self.outconv1(x)
+        x=self.obn1(x)
+        x=self.relu4(x)
+
+        x=self.outconv2(x)
+        x=self.obn2(x)
+        x=self.relu5(x)
 
         return x
 
-#model=Self_embedding_block()
-#summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
+model=Reconsructor()
+summary(model,input_size=(32,128,128),batch_size=8,device='cpu')
