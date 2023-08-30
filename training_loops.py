@@ -129,7 +129,7 @@ def training_loop():
         with torch.no_grad():
             test_dice,test_channeldice=test_step()
 
-            print('Epoch {epoch}'.format(epoch=epoch+1))
+            print('Epoch {epoch}'.format(epoch=epoch))
             print('Train Loss : {tloss}'.format(tloss=train_loss))
 
             print("Train Overall Dice Score : {dice}".format(dice=train_dice))
@@ -147,8 +147,8 @@ def training_loop():
             })
 
             #checkpoints
-            if((epoch+1)%10==0):
-                    path="./models/run_3/model{epoch}.pth".format(epoch=epoch+1)
+            if((epoch)%10==0):
+                    path="./models/run_4/model{epoch}.pth".format(epoch=epoch+1)
                     torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
@@ -194,7 +194,7 @@ if __name__=='__main__':
 
     mps.empty_cache()
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999))
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999),weight_decay=0.1)
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
