@@ -57,15 +57,22 @@ def train_step():
         #model training
         predictions=model(x_sample)
 
+
+        model.zero_grad()
+
         #compute loss function and perform backpropagation
         loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
-        model_optimizer.zero_grad()
-        loss.backward()
+        loss_func_dice=DiceLoss()
+        loss_dice=loss_func_dice(predictions,y_sample)
+
+        loss_combined=loss+loss_dice
+
+        loss_combined.backward()
         model_optimizer.step()
 
-        epoch_loss+=loss.item()
+        epoch_loss+=loss_combined.item()
 
         d=overall_dice_score(predictions,y_sample)
         dice+=d.item()
@@ -129,7 +136,7 @@ def training_loop():
         with torch.no_grad():
             test_dice,test_channeldice=test_step()
 
-            print('Epoch {epoch}'.format(epoch=epoch))
+            print('Epoch {epoch}'.format(epoch=epoch+1))
             print('Train Loss : {tloss}'.format(tloss=train_loss))
 
             print("Train Overall Dice Score : {dice}".format(dice=train_dice))
@@ -194,7 +201,7 @@ if __name__=='__main__':
 
     mps.empty_cache()
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999),weight_decay=0.1)
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']

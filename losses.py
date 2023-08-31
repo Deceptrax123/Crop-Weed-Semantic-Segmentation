@@ -31,7 +31,7 @@ class DiceLoss(Module):
 
             loss+=l
         likelihood=torch.log1p(torch.cosh(loss))
-        return likelihood.mean()
+        return loss.mean()
 
 
 class FocalLoss(nn.Module):
