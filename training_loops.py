@@ -64,15 +64,10 @@ def train_step():
         loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
-        loss_func_dice=DiceLoss()
-        loss_dice=loss_func_dice(predictions,y_sample)
-
-        loss_combined=loss+loss_dice
-
-        loss_combined.backward()
+        loss.backward()
         model_optimizer.step()
 
-        epoch_loss+=loss_combined.item()
+        epoch_loss+=loss.item()
 
         d=overall_dice_score(predictions,y_sample)
         dice+=d.item()
@@ -155,7 +150,7 @@ def training_loop():
 
             #checkpoints
             if((epoch+1)%10==0):
-                    path="./models/run_4/model{epoch}.pth".format(epoch=epoch+1)
+                    path="./models/run_5/model{epoch}.pth".format(epoch=epoch+1)
                     torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
@@ -193,7 +188,7 @@ if __name__=='__main__':
         device=torch.device("cpu")
 
     #Hyperparameters
-    lr=0.0005
+    lr=0.001
     num_epochs=200
 
     #set model and optimizers
