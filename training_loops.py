@@ -147,7 +147,7 @@ def training_loop():
             })
 
             #checkpoints
-            if((epoch)%10==0):
+            if((epoch+1)%10==0):
                     path="./models/run_4/model{epoch}.pth".format(epoch=epoch+1)
                     torch.save(model.state_dict(),path)
 
@@ -186,7 +186,7 @@ if __name__=='__main__':
         device=torch.device("cpu")
 
     #Hyperparameters
-    lr=0.001
+    lr=0.0005
     num_epochs=200
 
     #set model and optimizers
@@ -194,7 +194,7 @@ if __name__=='__main__':
 
     mps.empty_cache()
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999),weight_decay=0.1)
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999),weight_decay=0.1)
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']
