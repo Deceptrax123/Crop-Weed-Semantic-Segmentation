@@ -24,14 +24,14 @@ class DiceLoss(Module):
             intersection=(pred_batch*target_batch).sum(dim=1)
             union=pred_batch.sum(dim=1)+target_batch.sum(dim=1)
             
-            smooth=1
+            smooth=1e-6
 
             dice=(2*(intersection))/(union+smooth).mean()
             l=1-dice
 
             loss+=l
         likelihood=torch.log1p(torch.cosh(loss))
-        return loss.mean()
+        return likelihood.mean()
 
 
 class FocalLoss(nn.Module):

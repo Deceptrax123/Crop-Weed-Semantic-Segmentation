@@ -49,10 +49,10 @@ def train_step():
     channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
-        weights=compute_weights(y_sample)
+        #weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        weights=torch.from_numpy(weights).to(device=device)
+        #weights=torch.from_numpy(weights).to(device=device)
 
         #model training
         predictions=model(x_sample)
@@ -61,7 +61,7 @@ def train_step():
         model.zero_grad()
 
         #compute loss function and perform backpropagation
-        loss_function=nn.CrossEntropyLoss(weight=weights)
+        loss_function=DiceLoss()
         loss=loss_function(predictions,y_sample)
 
         loss.backward()
@@ -75,7 +75,7 @@ def train_step():
         d_channel=channel_dice_score(predictions,y_sample)
         channel_dice+=d_channel.item()
 
-        del weights 
+        #del weights 
         del y_sample 
         del x_sample 
         del predictions
@@ -150,7 +150,7 @@ def training_loop():
 
             #checkpoints
             if((epoch+1)%10==0):
-                    path="./models/run_5/model{epoch}.pth".format(epoch=epoch+1)
+                    path="./models/run_6/model{epoch}.pth".format(epoch=epoch+1)
                     torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
@@ -194,9 +194,7 @@ if __name__=='__main__':
     #set model and optimizers
     model=Architecture().to(device=device)
 
-    mps.empty_cache()
-
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999))
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999),weight_decay=0.01)
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']

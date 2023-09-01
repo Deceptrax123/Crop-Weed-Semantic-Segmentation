@@ -18,7 +18,7 @@ def overall_dice_score(input,target):
     intersection=(pred_bflat*target_bflat).sum(dim=1)
     union=pred_bflat.sum(dim=1)+target_bflat.sum(dim=1)
 
-    smooth=1
+    smooth=1e-6
 
     dice=(2*(intersection)/(union+smooth)).mean()
 
@@ -43,7 +43,7 @@ def channel_dice_score(input,target):
         intersection=(pred_channel_bflat*target_channel_bflat).sum(dim=1)
         union=pred_channel_bflat.sum(dim=1)+target_channel_bflat.sum(dim=1)
 
-        smooth=1
+        smooth=1e-6
 
         dice=(2*(intersection)/(union+smooth)).mean()
         overall+=dice
