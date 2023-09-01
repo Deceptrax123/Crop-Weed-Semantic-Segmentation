@@ -15,7 +15,7 @@ class DiceLoss(Module):
         loss=0
         channels=inputs.size(1)
 
-        for i in range(1,channels):
+        for i in range(0,channels):
             pred_channel=pred[:,i,:,:]
             target_channel=targets[:,i,:,:]
             channel_weight=self.weights[i]
@@ -32,7 +32,7 @@ class DiceLoss(Module):
             l=1-dice
 
             loss+=l
-        likelihood=torch.log1p(torch.cosh(loss))
+        likelihood=torch.log1p(torch.cosh(loss/channels))
         return likelihood.mean()
 
 

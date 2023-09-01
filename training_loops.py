@@ -39,7 +39,7 @@ def compute_weights(y_sample):
     counts=np.array(counts)
     weights=counts/total_pixels
 
-    inverse=1/weights
+    inverse=(1/weights)**2
     inverse=inverse.astype(np.float32)
     return inverse
 
