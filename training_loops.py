@@ -75,7 +75,7 @@ def train_step():
         d_channel=channel_dice_score(predictions,y_sample)
         channel_dice+=d_channel.item()
 
-        #del weights 
+        del weights 
         del y_sample 
         del x_sample 
         del predictions
