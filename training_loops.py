@@ -189,7 +189,7 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=200
+    num_epochs=1500
 
     #set model and optimizers
     model=Architecture().to(device=device)
