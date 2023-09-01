@@ -49,10 +49,10 @@ def train_step():
     channel_dice=0
 
     for step,(x_sample,y_sample) in enumerate(train_loader):
-        #weights=compute_weights(y_sample)
+        weights=compute_weights(y_sample)
         x_sample=x_sample.to(device=device)
         y_sample=y_sample.to(device=device)
-        #weights=torch.from_numpy(weights).to(device=device)
+        weights=torch.from_numpy(weights).to(device=device)
 
         #model training
         predictions=model(x_sample)
@@ -61,7 +61,7 @@ def train_step():
         model.zero_grad()
 
         #compute loss function and perform backpropagation
-        loss_function=DiceLoss()
+        loss_function=DiceLoss(weights=weights)
         loss=loss_function(predictions,y_sample)
 
         loss.backward()
