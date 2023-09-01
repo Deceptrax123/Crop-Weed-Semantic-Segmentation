@@ -12,8 +12,9 @@ class DiceLoss(Module):
     def forward(self,inputs,targets):
         pred=F.softmax(inputs,dim=1)
 
-        loss=0
         channels=inputs.size(1)
+
+        score=0
 
         for i in range(0,channels):
             pred_channel=pred[:,i,:,:]
@@ -26,14 +27,13 @@ class DiceLoss(Module):
             intersection=(pred_batch*target_batch).sum(dim=1)*channel_weight
             union=(pred_batch.sum(dim=1)+target_batch.sum(dim=1))*channel_weight
             
-            smooth=1e-9
+            smooth=1e-6
 
             dice=(2*(intersection+smooth))/(union+smooth).mean()
-            l=1-dice
-
-            loss+=l
-        likelihood=torch.log1p(torch.cosh(loss/channels))
-        return likelihood.mean()
+    
+            score+=dice
+        likelihood=torch.log1p(torch.cosh(1-score))
+        return (1-score).mean()
 
 
 class FocalLoss(nn.Module):

@@ -20,7 +20,7 @@ def overall_dice_score(input,target):
 
     smooth=1e-6
 
-    dice=(2*(intersection)/(union+smooth)).mean()
+    dice=(2*(intersection+smooth)/(union+smooth)).mean()
 
     return dice 
 
@@ -45,7 +45,7 @@ def channel_dice_score(input,target):
 
         smooth=1e-6
 
-        dice=(2*(intersection)/(union+smooth)).mean()
+        dice=(2*(intersection+smooth)/(union+smooth)).mean()
         overall+=dice
 
     return overall/channels
