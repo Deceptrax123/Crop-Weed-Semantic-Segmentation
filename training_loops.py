@@ -39,7 +39,7 @@ def compute_weights(y_sample):
     counts=np.array(counts)
     weights=counts/total_pixels
 
-    inverse=(1/weights)**2
+    inverse=(1/weights)
     inverse=inverse.astype(np.float32)
     return inverse
 
@@ -61,7 +61,7 @@ def train_step():
         model.zero_grad()
 
         #compute loss function and perform backpropagation
-        loss_function=DiceLoss(weights=weights)
+        loss_function=nn.CrossEntropyLoss(weight=weights)
         loss=loss_function(predictions,y_sample)
 
         loss.backward()
@@ -131,7 +131,7 @@ def training_loop():
         with torch.no_grad():
             test_dice,test_channeldice=test_step()
 
-            print('Epoch {epoch}'.format(epoch=epoch+1))
+            print('Epoch {epoch}'.format(epoch=epoch+201))
             print('Train Loss : {tloss}'.format(tloss=train_loss))
 
             print("Train Overall Dice Score : {dice}".format(dice=train_dice))
@@ -149,8 +149,8 @@ def training_loop():
             })
 
             #checkpoints
-            if((epoch+1)%10==0):
-                    path="./models/run_6/model{epoch}.pth".format(epoch=epoch+1)
+            if((epoch+201)%10==0):
+                    path="./models/run_5/model{epoch}.pth".format(epoch=epoch+201)
                     torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
@@ -189,12 +189,13 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=1500
+    num_epochs=500
 
     #set model and optimizers
     model=Architecture().to(device=device)
+    model.load_state_dict(torch.load("./models/run_5/model200.pth"))
 
-    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999),weight_decay=0.01)
+    model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.5,0.999),weight_decay=0.001)
 
     train_steps=(len(train)+params['batch_size']-1)//params['batch_size']
     test_steps=(len(test)+params['batch_size']-1)//params['batch_size']

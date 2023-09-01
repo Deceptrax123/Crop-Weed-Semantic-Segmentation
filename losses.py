@@ -16,7 +16,7 @@ class DiceLoss(Module):
 
         score=0
 
-        for i in range(0,channels):
+        for i in range(1,channels):
             pred_channel=pred[:,i,:,:]
             target_channel=targets[:,i,:,:]
             channel_weight=self.weights[i]
@@ -29,9 +29,10 @@ class DiceLoss(Module):
             
             smooth=1e-6
 
-            dice=(2*(intersection+smooth))/(union+smooth).mean()
+            dice=((2*(intersection+smooth))/(union+smooth)).mean()
     
             score+=dice
+        score=score/channels
         likelihood=torch.log1p(torch.cosh(1-score))
         return (1-score).mean()
 
