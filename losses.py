@@ -37,6 +37,7 @@ class DiceLoss(Module):
         return (1-score).mean()
 
 
+#Code obtained from https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
 class FocalLoss(nn.Module):
     def __init__(self, gamma=0, alpha=None, size_average=True):
         super(FocalLoss, self).__init__()

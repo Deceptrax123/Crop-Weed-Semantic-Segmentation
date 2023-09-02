@@ -7,7 +7,6 @@ from unet import Unet
 from torch.nn import Module
 from torch.nn import Conv2d,ConvTranspose2d
 from torchsummary import summary
-from vgg16 import extractor
 
 #Architecture
 class Architecture(Module):

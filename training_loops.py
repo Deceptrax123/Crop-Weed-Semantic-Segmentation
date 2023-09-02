@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
 from Base_paper.base_arch import MyArch
 from arch import Architecture
-from vgg16 import extractor
 from metrics import overall_dice_score,channel_dice_score
 from losses import DiceLoss,FocalLoss
 from time import time 
