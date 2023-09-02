@@ -29,15 +29,24 @@
 
 ## File Description
 
-| File Name         | Description                                                         |
-| ----------------- | ------------------------------------------------------------------- |
-| arch.py           | Source code of proposed architecture                                |
-| layer_blocks.py   | Building Blocks of the proposed architecture                        |
-| unet.py           | Source code of U-Net                                                |
-| augmentations.py  | Performs data augmentation and adds to disk                         |
-| data_script.py    | Get the data paths stored in text files and split as train and test |
-| weed_dataset.py   | Dataloader Class                                                    |
-| training_loops.py | Perform training experiments                                        |
-| losses.py         | Loss functions experimented                                         |
-| metrics.py        | Source code of metrics                                              |
-| tests.ipynb       | Perform Visualizing and Data tests                                  |
+| File Name                     | Description                                                         |
+| ----------------------------- | ------------------------------------------------------------------- |
+| arch.py                       | Source code of proposed architecture                                |
+| layer_blocks.py               | Building Blocks of the proposed architecture                        |
+| unet.py                       | Source code of U-Net                                                |
+| augmentations.py              | Performs data augmentation and adds to disk                         |
+| data_script.py                | Get the data paths stored in text files and split as train and test |
+| weed_dataset.py               | Dataloader Class                                                    |
+| training_loops.py             | Perform training experiments                                        |
+| losses.py                     | Loss functions experimented                                         |
+| metrics.py                    | Source code of metrics                                              |
+| prediction_sample_tests.ipynb | Test Model Predictions, Image Transforms, Dataset Visualization     |
+
+## Results
+
+<div align="center">
+    <img src="./results/output_1.png" alt="Result_1">
+    <img src="./results/output_2.png" alt="Result_2">
+    <img src="./results/output_3.png" alt="Result_3">
+    <img src="./results/output_4.png" alt="Result_4">
+</div>
