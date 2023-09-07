@@ -1,7 +1,7 @@
 import torch 
 from torch.nn import Conv2d,Dropout2d,ReLU,ConvTranspose2d
 from torch.nn import Module 
-from cnn_block import Cnn_Block_extractor,Cnn_Block_recon
+from experimental_models.deep_cnn.cnn_block import Cnn_Block_extractor,Cnn_Block_recon
 from torchsummary import summary
 
 
@@ -40,7 +40,3 @@ class Deep_CNN(Module):
         x=self.dconv(x)
 
         return x
-
-model=Deep_CNN()
-
-summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
