@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
-from Base_paper.base_arch import MyArch
+from experimental_models.encoder_decoder.base_arch import MyArch
 from arch import Architecture
 from metrics import overall_dice_score,channel_dice_score
 from losses import DiceLoss,FocalLoss

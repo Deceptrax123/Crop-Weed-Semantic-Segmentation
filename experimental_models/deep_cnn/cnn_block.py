@@ -23,7 +23,7 @@ class Cnn_Block_recon(Module):
     def __init__(self,features):
         super(Cnn_Block_recon,self).__init__()
 
-        self.conv=ConvTranspose2d(in_channels=features,out_channels=features//2,padding=1,kernel_size=(3,3),output_padding=1)
+        self.conv=ConvTranspose2d(in_channels=features,out_channels=features//2,padding=1,kernel_size=(3,3))
         self.bn=BatchNorm2d(features//2)
         self.dp=Dropout2d()
         self.relu=ReLU()
