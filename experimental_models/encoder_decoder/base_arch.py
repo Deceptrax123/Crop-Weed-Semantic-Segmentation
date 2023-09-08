@@ -157,5 +157,5 @@ class MyArch(Module):
 
         return x
 
-# model=MyArch()
-# summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
+#model=MyArch()
+#summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')

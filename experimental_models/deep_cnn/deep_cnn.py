@@ -15,9 +15,7 @@ class Deep_CNN(Module):
         self.block1=Cnn_Block_extractor(4)
         self.block2=Cnn_Block_extractor(8)
         self.block3=Cnn_Block_extractor(16)
-        self.block4=Cnn_Block_extractor(32)
 
-        self.block5=Cnn_Block_recon(64)
         self.block6=Cnn_Block_recon(32)
         self.block7=Cnn_Block_recon(16)
         self.block8=Cnn_Block_recon(8)
@@ -30,9 +28,7 @@ class Deep_CNN(Module):
         x=self.block1(x)
         x=self.block2(x)
         x=self.block3(x)
-        x=self.block4(x)
-
-        x=self.block5(x)
+       
         x=self.block6(x)
         x=self.block7(x)
         x=self.block8(x)

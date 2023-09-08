@@ -20,7 +20,7 @@ def read_file():
     test=list()
 
     #Train file loop
-    for i in range(126,335):
+    for i in range(335):
         training_example=list()
         for j in range(3):
             f=open(file_paths[j],'r')
