@@ -132,7 +132,7 @@ def training_loop():
         with torch.no_grad():
             test_dice,test_channeldice=test_step()
 
-            print('Epoch {epoch}'.format(epoch=epoch+251))
+            print('Epoch {epoch}'.format(epoch=epoch+1))
             print('Train Loss : {tloss}'.format(tloss=train_loss))
 
             print("Train Overall Dice Score : {dice}".format(dice=train_dice))
@@ -150,8 +150,8 @@ def training_loop():
             })
 
             #checkpoints
-            if((epoch+251)%10==0):
-                    path="./models/Our_model/run_7/model{epoch}.pth".format(epoch=epoch+251)
+            if((epoch+1)%10==0):
+                    path="./models/encoder_decoder_dilated/run_1/model{epoch}.pth".format(epoch=epoch+1)
                     torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
@@ -190,13 +190,10 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=250
+    num_epochs=500
 
     #set model and optimizers
-    model=Architecture().to(device=device)
-    #model.load_state_dict(torch.load("./models/run_5/model200.pth"))
-    #model=MyArch().to(device=device)
-    model.load_state_dict(torch.load("./models/our_model/run_7/model250.pth"))
+    model=MyArch_Dilated().to(device=device)
 
     model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999),weight_decay=0.001)
 

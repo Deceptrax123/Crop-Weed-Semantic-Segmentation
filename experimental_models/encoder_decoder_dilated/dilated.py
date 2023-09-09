@@ -156,5 +156,5 @@ class MyArch_Dilated(Module):
 
         return x
 
-model=MyArch_Dilated()
-summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
+#model=MyArch_Dilated()
+#summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')
