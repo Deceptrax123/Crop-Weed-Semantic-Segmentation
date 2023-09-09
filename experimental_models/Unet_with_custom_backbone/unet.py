@@ -1,6 +1,6 @@
 import torch 
 from torch import nn  
-from layer_blocks import Unet_decoding_block,Unet_encoding_block
+from experimental_models.Unet_with_custom_backbone.layer_blocks import Unet_decoding_block,Unet_encoding_block
 from torch.nn import Module,ConvTranspose2d,Conv2d,MaxPool2d,Dropout2d
 from torchsummary import summary
 

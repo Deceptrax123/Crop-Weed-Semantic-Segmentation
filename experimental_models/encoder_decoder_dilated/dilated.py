@@ -3,63 +3,63 @@ from torch.nn import Module,Conv2d,Softmax2d,ReLU,MaxPool2d,Dropout2d,Upsample,A
 from torchsummary import summary
 
 
-class MyArch(Module):
+class MyArch_Dilated(Module):
     def __init__(self):
-        super(MyArch,self).__init__()
+        super(MyArch_Dilated,self).__init__()
 
-        self.conv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=1)
+        self.conv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=2,dilation=2)
         self.bn1=BatchNorm2d(8)
         self.r1=ReLU()
 
-        self.conv2=Conv2d(in_channels=8,out_channels=16,stride=2,kernel_size=(3,3),padding=1)
+        self.conv2=Conv2d(in_channels=8,out_channels=16,stride=2,kernel_size=(3,3),padding=2,dilation=2)
         self.bn2=BatchNorm2d(16)
         self.r2=ReLU()
 
-        self.conv3=Conv2d(in_channels=16,out_channels=32,kernel_size=(3,3),stride=2,padding=1)
+        self.conv3=Conv2d(in_channels=16,out_channels=32,kernel_size=(3,3),stride=2,padding=2,dilation=2)
         self.bn3=BatchNorm2d(32)
         self.r3=ReLU()
 
-        self.conv4=Conv2d(in_channels=32,out_channels=64,kernel_size=(3,3),stride=2,padding=1)
+        self.conv4=Conv2d(in_channels=32,out_channels=64,kernel_size=(3,3),stride=2,padding=2,dilation=2)
         self.bn4=BatchNorm2d(64)
         self.r4=ReLU()
 
-        self.conv5=Conv2d(in_channels=64,out_channels=128,kernel_size=(3,3),stride=2,padding=1)
+        self.conv5=Conv2d(in_channels=64,out_channels=128,kernel_size=(3,3),stride=2,padding=2,dilation=2)
         self.bn5=BatchNorm2d(128)
         self.r5=ReLU()
 
-        self.conv6=Conv2d(in_channels=128,out_channels=256,kernel_size=(3,3),padding=1,stride=2)
+        self.conv6=Conv2d(in_channels=128,out_channels=256,kernel_size=(3,3),padding=2,stride=2,dilation=2)
         self.bn6=BatchNorm2d(256)
         self.r6=ReLU()
 
-        self.conv7=Conv2d(in_channels=256,out_channels=512,kernel_size=(3,3),padding=1,stride=2)
+        self.conv7=Conv2d(in_channels=256,out_channels=512,kernel_size=(3,3),padding=2,stride=2,dilation=2)
         self.bn7=BatchNorm2d(512)
         self.r7=ReLU()
 
-        self.dconv1=ConvTranspose2d(in_channels=512,out_channels=256,kernel_size=(3,3),padding=1,stride=2,output_padding=1)
+        self.dconv1=ConvTranspose2d(in_channels=512,out_channels=256,kernel_size=(3,3),padding=2,stride=2,output_padding=1,dilation=2)
         self.bn8=BatchNorm2d(256)
         self.r8=ReLU()
 
-        self.dconv2=ConvTranspose2d(in_channels=256,out_channels=128,kernel_size=(3,3),padding=1,stride=2,output_padding=1)
+        self.dconv2=ConvTranspose2d(in_channels=256,out_channels=128,kernel_size=(3,3),padding=2,stride=2,output_padding=1,dilation=2)
         self.bn9=BatchNorm2d(128)
         self.r9=ReLU()
 
-        self.dconv3=ConvTranspose2d(in_channels=128,out_channels=64,kernel_size=(3,3),stride=2,padding=1,output_padding=1)
+        self.dconv3=ConvTranspose2d(in_channels=128,out_channels=64,kernel_size=(3,3),stride=2,padding=2,output_padding=1,dilation=2)
         self.bn10=BatchNorm2d(64)
         self.r10=ReLU()
 
-        self.dconv4=ConvTranspose2d(in_channels=64,out_channels=32,kernel_size=(3,3),stride=2,padding=1,output_padding=1)
+        self.dconv4=ConvTranspose2d(in_channels=64,out_channels=32,kernel_size=(3,3),stride=2,padding=2,output_padding=1,dilation=2)
         self.bn11=BatchNorm2d(32)
         self.r11=ReLU()
 
-        self.dconv5=ConvTranspose2d(in_channels=32,out_channels=16,kernel_size=(3,3),stride=2,padding=1,output_padding=1)
+        self.dconv5=ConvTranspose2d(in_channels=32,out_channels=16,kernel_size=(3,3),stride=2,padding=2,output_padding=1,dilation=2)
         self.bn12=BatchNorm2d(16)
         self.r12=ReLU()
 
-        self.dconv6=ConvTranspose2d(in_channels=16,out_channels=8,padding=1,stride=2,kernel_size=(3,3),output_padding=1)
+        self.dconv6=ConvTranspose2d(in_channels=16,out_channels=8,padding=2,stride=2,kernel_size=(3,3),output_padding=1,dilation=2)
         self.bn13=BatchNorm2d(8)
         self.r13=ReLU()
 
-        self.dconv7=ConvTranspose2d(in_channels=8,out_channels=3,padding=1,stride=2,kernel_size=(3,3),output_padding=1)
+        self.dconv7=ConvTranspose2d(in_channels=8,out_channels=3,padding=2,stride=2,kernel_size=(3,3),output_padding=1,dilation=2)
 
         #dropoouts
         self.dp1=Dropout2d()
@@ -79,7 +79,6 @@ class MyArch(Module):
         self.classifier=Softmax2d()
     
     def forward(self,x):
-
         #encoding layers
         x1=self.conv1(x)
         x=self.bn1(x1)
@@ -116,7 +115,6 @@ class MyArch(Module):
         x=self.r7(x)
         x=self.dp7(x)
 
-        #decoding layers
         x=self.dconv1(x)
         xcat1=torch.add(x,x6)
         x=self.bn8(xcat1)
@@ -155,7 +153,8 @@ class MyArch(Module):
 
         x=self.dconv7(x)
 
+
         return x
 
-model=MyArch()
+model=MyArch_Dilated()
 summary(model,input_size=(3,1024,1024),batch_size=8,device='cpu')

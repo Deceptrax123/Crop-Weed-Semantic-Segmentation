@@ -4,7 +4,8 @@ from torch.utils.data import DataLoader
 from Weed_dataset import WeedDataset
 from experimental_models.encoder_decoder.base_arch import MyArch
 from experimental_models.deep_cnn.deep_cnn import Deep_CNN
-from arch import Architecture
+from experimental_models.Unet_with_custom_backbone.arch import Architecture
+from experimental_models.encoder_decoder_dilated.dilated import MyArch_Dilated
 from metrics import overall_dice_score,channel_dice_score
 from losses import DiceLoss,FocalLoss
 from time import time 
@@ -131,7 +132,7 @@ def training_loop():
         with torch.no_grad():
             test_dice,test_channeldice=test_step()
 
-            print('Epoch {epoch}'.format(epoch=epoch+201))
+            print('Epoch {epoch}'.format(epoch=epoch+251))
             print('Train Loss : {tloss}'.format(tloss=train_loss))
 
             print("Train Overall Dice Score : {dice}".format(dice=train_dice))
@@ -149,8 +150,8 @@ def training_loop():
             })
 
             #checkpoints
-            if((epoch+201)%10==0):
-                    path="./models/deep_cnn/model{epoch}.pth".format(epoch=epoch+201)
+            if((epoch+251)%10==0):
+                    path="./models/Our_model/run_7/model{epoch}.pth".format(epoch=epoch+251)
                     torch.save(model.state_dict(),path)
 
 if __name__=='__main__':
@@ -189,13 +190,13 @@ if __name__=='__main__':
 
     #Hyperparameters
     lr=0.001
-    num_epochs=200
+    num_epochs=250
 
     #set model and optimizers
-    #model=Architecture().to(device=device)
+    model=Architecture().to(device=device)
     #model.load_state_dict(torch.load("./models/run_5/model200.pth"))
-    model=MyArch().to(device=device)
-    model.load_state_dict(torch.load("./models/deep_cnn/model200.pth"))
+    #model=MyArch().to(device=device)
+    model.load_state_dict(torch.load("./models/our_model/run_7/model250.pth"))
 
     model_optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.999),weight_decay=0.001)
 
