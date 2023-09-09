@@ -7,23 +7,23 @@ class MyArch_Dilated(Module):
     def __init__(self):
         super(MyArch_Dilated,self).__init__()
 
-        self.conv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=2,dilation=2)
+        self.conv1=Conv2d(in_channels=3,out_channels=8,stride=2,kernel_size=(3,3),padding=1,dilation=1)
         self.bn1=BatchNorm2d(8)
         self.r1=ReLU()
 
-        self.conv2=Conv2d(in_channels=8,out_channels=16,stride=2,kernel_size=(3,3),padding=2,dilation=2)
+        self.conv2=Conv2d(in_channels=8,out_channels=16,stride=2,kernel_size=(3,3),padding=1,dilation=1)
         self.bn2=BatchNorm2d(16)
         self.r2=ReLU()
 
-        self.conv3=Conv2d(in_channels=16,out_channels=32,kernel_size=(3,3),stride=2,padding=2,dilation=2)
+        self.conv3=Conv2d(in_channels=16,out_channels=32,kernel_size=(3,3),stride=2,padding=1,dilation=1)
         self.bn3=BatchNorm2d(32)
         self.r3=ReLU()
 
-        self.conv4=Conv2d(in_channels=32,out_channels=64,kernel_size=(3,3),stride=2,padding=2,dilation=2)
+        self.conv4=Conv2d(in_channels=32,out_channels=64,kernel_size=(3,3),stride=2,padding=1,dilation=1)
         self.bn4=BatchNorm2d(64)
         self.r4=ReLU()
 
-        self.conv5=Conv2d(in_channels=64,out_channels=128,kernel_size=(3,3),stride=2,padding=2,dilation=2)
+        self.conv5=Conv2d(in_channels=64,out_channels=128,kernel_size=(3,3),stride=2,padding=1,dilation=1)
         self.bn5=BatchNorm2d(128)
         self.r5=ReLU()
 
@@ -35,23 +35,23 @@ class MyArch_Dilated(Module):
         self.bn7=BatchNorm2d(512)
         self.r7=ReLU()
 
-        self.dconv1=ConvTranspose2d(in_channels=512,out_channels=256,kernel_size=(3,3),padding=2,stride=2,output_padding=1,dilation=2)
+        self.dconv1=ConvTranspose2d(in_channels=512,out_channels=256,kernel_size=(3,3),padding=1,stride=2,output_padding=1,dilation=1)
         self.bn8=BatchNorm2d(256)
         self.r8=ReLU()
 
-        self.dconv2=ConvTranspose2d(in_channels=256,out_channels=128,kernel_size=(3,3),padding=2,stride=2,output_padding=1,dilation=2)
+        self.dconv2=ConvTranspose2d(in_channels=256,out_channels=128,kernel_size=(3,3),padding=1,stride=2,output_padding=1,dilation=1)
         self.bn9=BatchNorm2d(128)
         self.r9=ReLU()
 
-        self.dconv3=ConvTranspose2d(in_channels=128,out_channels=64,kernel_size=(3,3),stride=2,padding=2,output_padding=1,dilation=2)
+        self.dconv3=ConvTranspose2d(in_channels=128,out_channels=64,kernel_size=(3,3),stride=2,padding=1,output_padding=1,dilation=1)
         self.bn10=BatchNorm2d(64)
         self.r10=ReLU()
 
-        self.dconv4=ConvTranspose2d(in_channels=64,out_channels=32,kernel_size=(3,3),stride=2,padding=2,output_padding=1,dilation=2)
+        self.dconv4=ConvTranspose2d(in_channels=64,out_channels=32,kernel_size=(3,3),stride=2,padding=1,output_padding=1,dilation=1)
         self.bn11=BatchNorm2d(32)
         self.r11=ReLU()
 
-        self.dconv5=ConvTranspose2d(in_channels=32,out_channels=16,kernel_size=(3,3),stride=2,padding=2,output_padding=1,dilation=2)
+        self.dconv5=ConvTranspose2d(in_channels=32,out_channels=16,kernel_size=(3,3),stride=2,padding=1,output_padding=1,dilation=1)
         self.bn12=BatchNorm2d(16)
         self.r12=ReLU()
 
