@@ -14,7 +14,7 @@ Icon
 data/
 wandb/
 models/
-
+predictions/
 # Thumbnails
 ._*
 
