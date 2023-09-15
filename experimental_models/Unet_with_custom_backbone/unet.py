@@ -1,6 +1,6 @@
 import torch 
 from torch import nn  
-from experimental_models.Unet_with_custom_backbone.layer_blocks import Unet_decoding_block,Unet_encoding_block
+import experimental_models.Unet_with_custom_backbone.layer_blocks as blk
 from torch.nn import Module,ConvTranspose2d,Conv2d,MaxPool2d,Dropout2d
 from torchsummary import summary
 
@@ -9,18 +9,18 @@ class Unet(Module):
         super(Unet,self).__init__()
 
         #downsampling blocks
-        self.down1=Unet_encoding_block(32)
-        self.down2=Unet_encoding_block(64)
-        self.down3=Unet_encoding_block(128)
+        self.down1=blk.Unet_encoding_block(32)
+        self.down2=blk.Unet_encoding_block(64)
+        self.down3=blk.Unet_encoding_block(128)
 
         #embedding convolution
         self.emb1=Conv2d(in_channels=256,out_channels=256,stride=1,padding=1,kernel_size=(3,3))
         self.emb2=Conv2d(in_channels=256,out_channels=256,stride=1,padding=1,kernel_size=(3,3))
         
         #upsampling blocks
-        self.up1=Unet_decoding_block(256)
-        self.up2=Unet_decoding_block(128)
-        self.up3=Unet_decoding_block(64)
+        self.up1=blk.Unet_decoding_block(256)
+        self.up2=blk.Unet_decoding_block(128)
+        self.up3=blk.Unet_decoding_block(64)
     
 
         #deconvolutoion blocks
